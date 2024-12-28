@@ -1,0 +1,11 @@
+<div>
+    <!--Editor-->
+    <form id="editor" hx-post="/site/admin/blog/md-render" hx-trigger="keyup changed" hx-target="#container">
+        <textarea class="border-4 border-gray-300" id="content" name="content" rows="5" cols="100">
+        </textarea>
+    </form>
+
+    <!--Container-->
+    <div id="container">
+    </div>
+</div>

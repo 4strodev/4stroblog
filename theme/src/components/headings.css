@@ -1,0 +1,16 @@
+@layer components {
+    h1, .h1 {
+        @apply font-semibold text-3xl;
+    }
+    h2, .h2 {
+        @apply font-semibold text-2xl;
+    }
+
+    h3, .h3 {
+        @apply italic text-xl;
+    }
+
+    h4, .h4 {
+        @apply italic text-lg;
+    }
+}

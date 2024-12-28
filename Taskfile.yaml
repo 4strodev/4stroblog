@@ -1,0 +1,23 @@
+version: '3'
+
+tasks:
+  dev:
+    deps:
+      - start:dev
+      - theme:build:watch
+
+  start:
+    dir: './site'
+    cmd: go run ./cmd
+
+  start:dev:
+    dir: './site'
+    cmd: arelo -p '**/*.go' -p 'views/**/*' -p 'config/config.toml' -i '**/*_test.go' -- go run ./cmd
+
+  theme:build:
+    dir: './theme'
+    cmd: pnpm build
+
+  theme:build:watch:
+    dir: './theme'
+    cmd: pnpm build --watch
