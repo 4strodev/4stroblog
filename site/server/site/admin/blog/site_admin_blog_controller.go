@@ -2,8 +2,6 @@ package blog
 
 import (
 	"github.com/4strodev/4stroblog/site/application/blog"
-	"github.com/4strodev/4stroblog/site/server/core"
-	"github.com/4strodev/4stroblog/site/server/site/page"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -30,9 +28,5 @@ func (c *SiteAdminBlogController) Init(router fiber.Router) error {
 		return ctx.SendString(string(html))
 	})
 
-	return core.LoadNestedControllers(blogRouter, []core.Controller{
-		&page.SitePageController{
-			Prefix: "admin/blog",
-		},
-	})
+	return nil
 }

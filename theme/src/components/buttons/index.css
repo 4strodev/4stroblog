@@ -1,0 +1,19 @@
+.btn-primary {
+    @apply bg-primary rounded-md text-ghost_white;
+}
+
+.btn-primary:active {
+    @apply bg-primary-400 rounded-md;
+}
+
+.btn-sm {
+    @apply p-2;
+}
+
+.btn-md {
+    @apply p-8;
+}
+
+.btn-lg {
+    @apply p-16;
+}

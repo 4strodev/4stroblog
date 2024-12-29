@@ -1,0 +1,9 @@
+a, .link {
+    @apply text-primary underline decoration-1;
+}
+
+a, .link:hover {
+    @apply text-secondary underline decoration-1;
+}
+
+

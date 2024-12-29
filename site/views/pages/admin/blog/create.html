@@ -1,11 +1,10 @@
-<div>
+<div class="size-full flex gap-4 flex-col md:flex-row">
     <!--Editor-->
-    <form id="editor" hx-post="/site/admin/blog/md-render" hx-trigger="keyup changed" hx-target="#container">
-        <textarea class="border-4 border-gray-300" id="content" name="content" rows="5" cols="100">
-        </textarea>
+    <form class="w-full" id="editor" hx-post="/site/admin/blog/md-render" hx-trigger="keyup changed" hx-target="#container">
+        <textarea class="form-control w-full" id="content" name="content" rows="20"></textarea>
     </form>
 
     <!--Container-->
-    <div id="container">
+    <div id="container" class="w-full">
     </div>
 </div>

@@ -20,4 +20,4 @@ tasks:
 
   theme:build:watch:
     dir: './theme'
-    cmd: pnpm build --watch
+    cmd: pnpm build:watch

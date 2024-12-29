@@ -4,8 +4,6 @@ import (
 	"net/http"
 
 	"github.com/4strodev/4stroblog/site/application/session/services"
-	"github.com/4strodev/4stroblog/site/server/core"
-	"github.com/4strodev/4stroblog/site/server/site/page"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -37,9 +35,5 @@ func (c *SiteSessionController) Init(router fiber.Router) error {
 		return ctx.Status(http.StatusCreated).JSON(res)
 	})
 
-	return core.LoadNestedControllers(group, []core.Controller{
-		&page.SitePageController{
-			Prefix: "site",
-		},
-	})
+	return nil
 }

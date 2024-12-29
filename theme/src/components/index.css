@@ -1,1 +1,8 @@
+@import "./paragraph.css";
 @import "./headings.css";
+@import "./links.css";
+@import "./blockquotes.css";
+
+@import "./form/index.css";
+@import "./buttons/index.css";
+@import "./cards/index.css";
