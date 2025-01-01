@@ -4,6 +4,7 @@ import (
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
+	emoji "github.com/4strodev/go-markdown-emoji"
 	"github.com/microcosm-cc/bluemonday"
 )
 
@@ -12,9 +13,12 @@ import (
 func RenderMarkdown(md []byte) []byte {
 	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock
 	p := parser.NewWithExtensions(extensions)
+	p.Opts = parser.Options{
+		ParserHook: emoji.Parser,
+	}
 	doc := p.Parse(md)
 	htmlFlags := html.CommonFlags | html.HrefTargetBlank
-	opts := html.RendererOptions{Flags: htmlFlags}
+	opts := html.RendererOptions{Flags: htmlFlags, RenderNodeHook: emoji.Renderer}
 	renderer := html.NewRenderer(opts)
 
 	rawHtml := markdown.Render(doc, renderer)

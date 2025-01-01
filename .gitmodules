@@ -1,0 +1,3 @@
+[submodule "go-markdown-emoji"]
+	path = go-markdown-emoji
+	url = git@github.com:4strodev/go-markdown-emoji

@@ -11,6 +11,7 @@ tasks:
     cmd: go run ./cmd
 
   start:dev:
+    dotenv: ['.dev.env']
     dir: './site'
     cmd: arelo -p '**/*.go' -p 'views/**/*' -p 'config/config.toml' -i '**/*_test.go' -- go run ./cmd
 
