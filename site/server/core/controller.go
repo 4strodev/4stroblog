@@ -1,15 +1,17 @@
 // core saves building blocks to create an web application, controllers, middlewares, etc.
 package core
 
-import "github.com/gofiber/fiber/v3"
+import (
+	wiring "github.com/4strodev/wiring/pkg"
+)
 
 type Controller interface {
-	Init(router fiber.Router) error
+	Init(container wiring.Container) error
 }
 
-func LoadNestedControllers(router fiber.Router, controllers []Controller) error {
+func LoadNestedControllers(container wiring.Container, controllers []Controller) error {
 	for _, controller := range controllers {
-		err := controller.Init(router)
+		err := controller.Init(container)
 		if err != nil {
 			return err
 		}

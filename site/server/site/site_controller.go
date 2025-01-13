@@ -6,13 +6,20 @@ import (
 	"github.com/4strodev/4stroblog/site/server/site/blog"
 	"github.com/4strodev/4stroblog/site/server/site/page"
 	"github.com/4strodev/4stroblog/site/server/site/session"
+	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring/pkg/extended"
 	"github.com/gofiber/fiber/v3"
 )
 
 type SiteController struct {
 }
 
-func (c *SiteController) Init(router fiber.Router) error {
+func (c *SiteController) Init(container wiring.Container) error {
+	var router fiber.Router
+	err := container.Resolve(&router)
+	if err != nil {
+		return err
+	}
 	siteRouter := router.Group("site")
 
 	// If no route is matched then go to not found
@@ -20,7 +27,15 @@ func (c *SiteController) Init(router fiber.Router) error {
 		return ctx.Redirect().To("/site/")
 	})
 
-	err := core.LoadNestedControllers(siteRouter, []core.Controller{
+	derivedContainer := extended.Derived(container)
+	err = derivedContainer.Singleton(func() fiber.Router {
+		return siteRouter
+	})
+	if err != nil {
+		return err
+	}
+
+	err = core.LoadNestedControllers(derivedContainer, []core.Controller{
 		&session.SiteSessionController{},
 		&blog.SiteBlogController{},
 		&admin.SiteAdminController{},
@@ -31,7 +46,6 @@ func (c *SiteController) Init(router fiber.Router) error {
 			Prefix: "/site",
 		},
 	})
-
 	if err != nil {
 		return err
 	}

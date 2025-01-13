@@ -1,14 +1,20 @@
 package blog
 
 import (
-	"github.com/4strodev/4stroblog/site/application/blog"
+	"github.com/4strodev/4stroblog/site/modules/blog"
+	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
 )
 
 type SiteBlogController struct {
 }
 
-func (c *SiteBlogController) Init(router fiber.Router) error {
+func (c *SiteBlogController) Init(container wiring.Container) error {
+	var router fiber.Router
+	err := container.Resolve(&router)
+	if err != nil {
+		return err
+	}
 	blogRouter := router.Group("/blog")
 
 	blogRouter.Get("/render/post/:title", func(ctx fiber.Ctx) error {

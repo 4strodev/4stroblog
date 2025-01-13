@@ -1,17 +1,24 @@
-package services
+package application
 
 import (
 	"errors"
 	"fmt"
 	"time"
 
-	appSession "github.com/4strodev/4stroblog/site/application/session"
+	appSession "github.com/4strodev/4stroblog/site/modules/session/domain"
 	"github.com/4strodev/4stroblog/site/shared/config"
 	"github.com/4strodev/4stroblog/site/shared/db/models"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
+
+func NewLoginService(db *gorm.DB, cfg config.Config) *LoginService {
+	return &LoginService{
+		DB:     db,
+		Config: cfg,
+	}
+}
 
 type LoginService struct {
 	DB     *gorm.DB

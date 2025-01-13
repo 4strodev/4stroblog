@@ -6,7 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/4strodev/4stroblog/site/application/blog"
+	"github.com/4strodev/4stroblog/site/modules/blog"
+	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/gofiber/fiber/v3/middleware/static"
@@ -14,6 +15,7 @@ import (
 )
 
 type Server struct {
+	Wiring      wiring.Container
 	fiber       *fiber.App
 	controllers []Controller
 	middlewares []fiber.Handler
@@ -28,6 +30,9 @@ func (s *Server) AddMiddleware(handler fiber.Handler) {
 }
 
 func (s *Server) Start(port int) error {
+	if s.Wiring == nil {
+		s.Wiring = wiring.New()
+	}
 	addr := fmt.Sprintf(":%d", port)
 	viewsEngine := html.New("./views", ".html")
 	viewsEngine.AddFunc("renderPost", func(post string) string {
@@ -53,12 +58,19 @@ func (s *Server) Start(port int) error {
 	s.fiber.Get("/assets/*", static.New("./assets"))
 	s.fiber.Get("/uploads/*", static.New("./uploads"))
 
+	err := s.Wiring.Singleton(func() fiber.Router {
+		return s.fiber
+	})
+	if err != nil {
+		return err
+	}
+
 	for _, middleware := range s.middlewares {
 		s.fiber.Use(middleware)
 	}
 
 	for _, controller := range s.controllers {
-		err := controller.Init(s.fiber)
+		err := controller.Init(s.Wiring)
 		if err != nil {
 			return err
 		}

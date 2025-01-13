@@ -17,6 +17,7 @@ require (
 
 require (
 	github.com/4strodev/go-markdown-emoji v1.0.4 // indirect
+	github.com/4strodev/wiring v1.1.0 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect

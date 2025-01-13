@@ -6,6 +6,8 @@ import (
 	"github.com/4strodev/4stroblog/site/server/core"
 	"github.com/4strodev/4stroblog/site/server/site/admin/blog"
 	"github.com/4strodev/4stroblog/site/server/site/page"
+	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring/pkg/extended"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -55,8 +57,14 @@ func isTokenValid(token string) bool {
 	return true
 }
 
-func (c *SiteAdminController) Init(router fiber.Router) error {
+func (c *SiteAdminController) Init(container wiring.Container) error {
+	var router fiber.Router
+	err := container.Resolve(&router)
+	if err != nil {
+		return err
+	}
 	adminRouter := router.Group("/admin")
+	derivedContainer := extended.Derived(container)
 
 	adminRouter.Use(func(ctx fiber.Ctx) error {
 		if strings.HasPrefix(ctx.Path(), "/site/admin/session") {
@@ -83,7 +91,14 @@ func (c *SiteAdminController) Init(router fiber.Router) error {
 		return ctx.Redirect().To("/not-found")
 	})
 
-	return core.LoadNestedControllers(adminRouter, []core.Controller{
+	err = derivedContainer.Singleton(func() fiber.Router {
+		return adminRouter
+	})
+	if err != nil {
+		return err
+	}
+
+	return core.LoadNestedControllers(derivedContainer, []core.Controller{
 		&blog.SiteAdminBlogController{},
 		&page.SitePageController{
 			Prefix:      "/site/admin",

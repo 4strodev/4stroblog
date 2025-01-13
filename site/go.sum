@@ -2,6 +2,10 @@ github.com/4strodev/go-markdown-emoji v1.0.3 h1:OE0WK/+McAEfFmany41LHuKKaEPCTKNy
 github.com/4strodev/go-markdown-emoji v1.0.3/go.mod h1:BM3gTGJG0NeiTmb2P3faP8JEPsWc5Yt7mNjAJgR5CjU=
 github.com/4strodev/go-markdown-emoji v1.0.4 h1:yXQ6oM7mAzVkUq1IheSPpTv4tdU7K658JaixJZhq3VU=
 github.com/4strodev/go-markdown-emoji v1.0.4/go.mod h1:BM3gTGJG0NeiTmb2P3faP8JEPsWc5Yt7mNjAJgR5CjU=
+github.com/4strodev/wiring v1.0.0 h1:KHj46dGN72nTKUl3MJEHXZ+JO65gz7J9eCXkmJJofaA=
+github.com/4strodev/wiring v1.0.0/go.mod h1:z6KmAy+/ae4gPjguKorPd0Vm6b01XxpQFhnz8SEwrF0=
+github.com/4strodev/wiring v1.1.0 h1:unZiGEx6NaDtdRI7eLONsweWkRzfJO4cWvKkM+HE3fQ=
+github.com/4strodev/wiring v1.1.0/go.mod h1:z6KmAy+/ae4gPjguKorPd0Vm6b01XxpQFhnz8SEwrF0=
 github.com/andybalholm/brotli v1.1.1 h1:PR2pgnyFznKEugtsUo0xLdDop5SKXd5Qf5ysW+7XdTA=
 github.com/andybalholm/brotli v1.1.1/go.mod h1:05ib4cKhjx3OQYUY22hTVd34Bc8upXjOLL2rKwwZBoA=
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=

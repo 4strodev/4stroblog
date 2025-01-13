@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -12,7 +13,13 @@ type SitePageController struct {
 	PagesFolder string
 }
 
-func (c *SitePageController) Init(router fiber.Router) error {
+func (c *SitePageController) Init(container wiring.Container) error {
+	var router fiber.Router
+	err := container.Resolve(&router)
+	if err != nil {
+		return err
+	}
+
 	router.Get("*", func(ctx fiber.Ctx) error {
 		routePath := ctx.Path()
 		subPage := strings.TrimPrefix(routePath, c.Prefix)

@@ -3,25 +3,31 @@ package session
 import (
 	"net/http"
 
-	"github.com/4strodev/4stroblog/site/application/session/services"
+	"github.com/4strodev/4stroblog/site/modules/session/application"
+	"github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
 )
 
 type SiteSessionController struct {
-	loginService services.LoginService
+	loginService application.LoginService
 }
 
-func NewSiteSessionController(loginService *services.LoginService) *SiteSessionController {
+func NewSiteSessionController(loginService *application.LoginService) *SiteSessionController {
 	return &SiteSessionController{
 		loginService: *loginService,
 	}
 }
 
-func (c *SiteSessionController) Init(router fiber.Router) error {
+func (c *SiteSessionController) Init(container pkg.Container) error {
+	var router fiber.Router
+	err := container.Resolve(&router)
+	if err != nil {
+		return err
+	}
 	group := router.Group("/session")
 
 	group.Post("/login", func(ctx fiber.Ctx) error {
-		var req services.LoginReqDTO
+		var req application.LoginReqDTO
 		if err := ctx.Bind().Body(&req); err != nil {
 			return err
 		}
