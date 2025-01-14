@@ -12,7 +12,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
 type SessionCreateReq struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
@@ -27,9 +26,9 @@ type SessionCreateRes struct {
 
 func (s *SessionService) Create(req SessionCreateReq) (SessionCreateRes, error) {
 	email, password := req.User, req.Password
-	var session = appSession.Session{}
+	var session appSession.Session
 	var response SessionCreateRes
-	var profile = models.Profile{}
+	var profile models.Profile
 
 	// Getting user profile
 	err := s.DB.First(&profile, "email = ?", email).Error

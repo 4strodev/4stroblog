@@ -5,11 +5,11 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/4strodev/4stroblog/site/modules/blog"
 	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/gofiber/fiber/v3/middleware/static"
 	"github.com/gofiber/template/html/v2"
 )
@@ -54,7 +54,24 @@ func (s *Server) Start(port int) error {
 			return ctx.Status(http.StatusInternalServerError).SendString(err.Error())
 		},
 	})
-	s.fiber.Use(recover.New())
+	s.fiber.Use(func(ctx fiber.Ctx) error {
+		defer func() {
+			r := recover()
+			if r == nil {
+				return
+			}
+
+			debug.PrintStack()
+			s := fmt.Sprint(r)
+			log.Println(s)
+
+			err := ctx.Status(http.StatusInternalServerError).SendString(s)
+			if err != nil {
+				log.Println(err)
+			}
+		}()
+		return ctx.Next()
+	})
 	s.fiber.Get("/assets/*", static.New("./assets"))
 	s.fiber.Get("/uploads/*", static.New("./uploads"))
 

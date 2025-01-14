@@ -1,6 +1,7 @@
 package site
 
 import (
+	"github.com/4strodev/4stroblog/site/modules/session/application"
 	"github.com/4strodev/4stroblog/site/server/core"
 	"github.com/4strodev/4stroblog/site/server/site/admin"
 	"github.com/4strodev/4stroblog/site/server/site/blog"
@@ -35,8 +36,14 @@ func (c *SiteController) Init(container wiring.Container) error {
 		return err
 	}
 
+	var sessionService *application.SessionService
+	err = container.Resolve(&sessionService)
+	if err != nil {
+		return err
+	}
+	var siteSessionController = session.NewSiteSessionController(sessionService)
 	err = core.LoadNestedControllers(derivedContainer, []core.Controller{
-		&session.SiteSessionController{},
+		siteSessionController,
 		&blog.SiteBlogController{},
 		&admin.SiteAdminController{},
 
