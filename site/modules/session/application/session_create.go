@@ -6,48 +6,30 @@ import (
 	"time"
 
 	appSession "github.com/4strodev/4stroblog/site/modules/session/domain"
-	"github.com/4strodev/4stroblog/site/shared/config"
 	"github.com/4strodev/4stroblog/site/shared/db/models"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-func NewLoginService(db *gorm.DB, cfg config.Config) *LoginService {
-	return &LoginService{
-		DB:     db,
-		Config: cfg,
-	}
-}
 
-type LoginService struct {
-	DB     *gorm.DB
-	Config config.Config
-}
-
-type LoginReqDTO struct {
+type SessionCreateReq struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
 }
 
-type LoginSessionResDTO struct {
+type SessionCreateRes struct {
 	ExpirationTime time.Time `json:"expirationTime"`
 	ID             uuid.UUID `json:"id"`
 	UserID         uuid.UUID `json:"userId"`
 	ProfileID      uuid.UUID `json:"profileId"`
 }
 
-type LoginResDTO struct {
-	Session      LoginSessionResDTO `json:"session"`
-	AccessToken  string             `json:"accessToken"`
-	RefreshToken string             `json:"refreshToken"`
-}
-
-func (s *LoginService) Login(req LoginReqDTO) (LoginResDTO, error) {
+func (s *SessionService) Create(req SessionCreateReq) (SessionCreateRes, error) {
 	email, password := req.User, req.Password
-	response := LoginResDTO{}
-	session := appSession.Session{}
-	profile := models.Profile{}
+	var session = appSession.Session{}
+	var response SessionCreateRes
+	var profile = models.Profile{}
 
 	// Getting user profile
 	err := s.DB.First(&profile, "email = ?", email).Error
@@ -70,13 +52,6 @@ func (s *LoginService) Login(req LoginReqDTO) (LoginResDTO, error) {
 	if err != nil {
 		return response, err
 	}
-	// Creating JWTs
-	jwtBuilder := appSession.JWTBuilder{}
-	jwts, err := jwtBuilder.SetSecret(s.Config.JWK.Secret).Build(session)
-	if err != nil {
-		return response, err
-	}
-
 	sessionModel := models.Session{
 		ID:             session.ID,
 		UserID:         session.UserID,
@@ -84,16 +59,11 @@ func (s *LoginService) Login(req LoginReqDTO) (LoginResDTO, error) {
 	}
 
 	s.DB.Create(&sessionModel)
-	response = LoginResDTO{
-		Session: LoginSessionResDTO{
-			ID:             session.ID,
-			UserID:         session.UserID,
-			ExpirationTime: session.ExpriationTime,
-			ProfileID:      session.ProfileID,
-		},
-		AccessToken:  jwts.AccessToken,
-		RefreshToken: jwts.RefreshToken,
+	response = SessionCreateRes{
+		ID:             session.ID,
+		UserID:         session.UserID,
+		ExpirationTime: session.ExpriationTime,
+		ProfileID:      session.ProfileID,
 	}
-
 	return response, nil
 }

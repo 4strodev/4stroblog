@@ -9,10 +9,10 @@ import (
 )
 
 type SiteSessionController struct {
-	loginService application.LoginService
+	loginService application.SessionService
 }
 
-func NewSiteSessionController(loginService *application.LoginService) *SiteSessionController {
+func NewSiteSessionController(loginService *application.SessionService) *SiteSessionController {
 	return &SiteSessionController{
 		loginService: *loginService,
 	}
@@ -27,12 +27,12 @@ func (c *SiteSessionController) Init(container pkg.Container) error {
 	group := router.Group("/session")
 
 	group.Post("/login", func(ctx fiber.Ctx) error {
-		var req application.LoginReqDTO
+		var req application.SessionCreateReq
 		if err := ctx.Bind().Body(&req); err != nil {
 			return err
 		}
 
-		res, err := c.loginService.Login(req)
+		res, err := c.loginService.Create(req)
 		if err != nil {
 			return err
 		}

@@ -29,7 +29,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = container.Transient(application.NewLoginService)
+	err = container.Transient(application.NewSessionService)
 	if err != nil {
 		panic(err)
 	}

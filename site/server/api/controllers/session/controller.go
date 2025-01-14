@@ -29,17 +29,17 @@ func (init *SessionController) Init(container wiring.Container) error {
 
 	group := router.Group("/session")
 	group.Post("/login", func(ctx fiber.Ctx) error {
-		loginService := application.LoginService{
+		loginService := application.SessionService{
 			DB:     db,
 			Config: config,
 		}
-		body := application.LoginReqDTO{}
+		body := application.SessionCreateReq{}
 		err := ctx.Bind().Body(&body)
 		if err != nil {
 			return err
 		}
 
-		response, err := loginService.Login(body)
+		response, err := loginService.Create(body)
 		if err != nil {
 			return err
 		}
