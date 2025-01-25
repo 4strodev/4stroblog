@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/4strodev/4stroblog/site/modules/blog"
+	"github.com/4strodev/4stroblog/site/features/blog"
 	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/static"
@@ -17,12 +17,12 @@ import (
 type Server struct {
 	Wiring      wiring.Container
 	fiber       *fiber.App
-	controllers []Controller
 	middlewares []fiber.Handler
+	modules     []Module
 }
 
-func (s *Server) AddController(controller Controller) {
-	s.controllers = append(s.controllers, controller)
+func (s *Server) AddModule(module Module) {
+	s.modules = append(s.modules, module)
 }
 
 func (s *Server) AddMiddleware(handler fiber.Handler) {
@@ -86,8 +86,8 @@ func (s *Server) Start(port int) error {
 		s.fiber.Use(middleware)
 	}
 
-	for _, controller := range s.controllers {
-		err := controller.Init(s.Wiring)
+	for _, module := range s.modules {
+		err := module.init(s.Wiring)
 		if err != nil {
 			return err
 		}

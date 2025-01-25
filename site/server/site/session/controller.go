@@ -3,19 +3,19 @@ package session
 import (
 	"net/http"
 
-	"github.com/4strodev/4stroblog/site/modules/session/application"
+	"github.com/4strodev/4stroblog/site/features/session/application"
 	"github.com/4strodev/4stroblog/site/server"
 	"github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
 )
 
 type SiteSessionController struct {
-	sessionService application.SessionService
+	sessionService *application.SessionService
 }
 
-func NewSiteSessionController(loginService *application.SessionService) *SiteSessionController {
+func NewSiteSessionController(sessionService *application.SessionService) *SiteSessionController {
 	return &SiteSessionController{
-		sessionService: *loginService,
+		sessionService: sessionService,
 	}
 }
 

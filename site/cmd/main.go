@@ -5,10 +5,10 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/4strodev/4stroblog/site/modules"
 	"github.com/4strodev/4stroblog/site/server/api"
 	"github.com/4strodev/4stroblog/site/server/core"
 	"github.com/4strodev/4stroblog/site/server/site"
+	"github.com/4strodev/4stroblog/site/shared"
 	wiring "github.com/4strodev/wiring/pkg"
 )
 
@@ -19,9 +19,12 @@ func main() {
 	}
 
 	container := wiring.New()
-	modules.LoadServices(container)
+
 	s := core.Server{Wiring: container}
-	s.AddController(&api.ApiController{})
-	s.AddController(&site.SiteController{})
+
+	s.AddModule(shared.SharedModule)
+	s.AddModule(site.SiteModule)
+	s.AddModule(api.ApiModule)
+
 	log.Fatal(s.Start(int(port)))
 }

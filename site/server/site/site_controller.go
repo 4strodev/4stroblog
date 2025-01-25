@@ -1,7 +1,7 @@
 package site
 
 import (
-	"github.com/4strodev/4stroblog/site/modules/session/application"
+	"github.com/4strodev/4stroblog/site/features/session/application"
 	"github.com/4strodev/4stroblog/site/server/core"
 	"github.com/4strodev/4stroblog/site/server/site/admin"
 	"github.com/4strodev/4stroblog/site/server/site/blog"
@@ -13,42 +13,54 @@ import (
 )
 
 type SiteController struct {
+	SiteSessionController *session.SiteSessionController
+	SiteBlogController    *blog.SiteBlogController
+	SiteAdminController   *admin.SiteAdminController
+	container             wiring.Container `wire:",ignore"`
 }
 
 func (c *SiteController) Init(container wiring.Container) error {
-	var router fiber.Router
-	err := container.Resolve(&router)
+	var err error
+	var sessionService *application.SessionService
+
+	// Creating derived container
+	c.container = extended.Derived(container)
+	err = c.container.Resolve(&sessionService)
 	if err != nil {
 		return err
 	}
-	siteRouter := router.Group("site")
+
+	// Setting up routes
+	var router fiber.Router
+	err = container.Resolve(&router)
+	if err != nil {
+		return err
+	}
 
 	// If no route is matched then go to not found
 	router.Get("/", func(ctx fiber.Ctx) error {
 		return ctx.Redirect().To("/site/")
 	})
 
-	derivedContainer := extended.Derived(container)
-	err = derivedContainer.Singleton(func() fiber.Router {
+	siteRouter := router.Group("site")
+	err = c.container.Singleton(func() fiber.Router {
 		return siteRouter
 	})
 	if err != nil {
 		return err
 	}
 
-	var sessionService *application.SessionService
-	err = container.Resolve(&sessionService)
+	err = c.container.Fill(c)
 	if err != nil {
 		return err
 	}
-	var siteSessionController = session.NewSiteSessionController(sessionService)
-	err = core.LoadNestedControllers(derivedContainer, []core.Controller{
-		siteSessionController,
-		&blog.SiteBlogController{},
-		&admin.SiteAdminController{},
+	err = core.LoadNestedControllers(c.container, []core.Controller{
+		//c.SiteSessionController,
+		//c.SiteBlogController,
+		//c.SiteAdminController,
 
-		// Page controllers has to be loaded the lasts ones
-		// to avoid routes collisions
+		//// Page controllers has to be loaded the lasts ones
+		//// to avoid routes collisions
 		&page.SitePageController{
 			Prefix: "/site",
 		},

@@ -1,0 +1,9 @@
+services:
+  4stroblog:
+    build: .
+    restart: always
+    container_name: 4stroblog
+    environment:
+      PORT: 3000
+    ports:
+      - 3000:3000

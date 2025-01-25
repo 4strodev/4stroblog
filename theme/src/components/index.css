@@ -2,6 +2,7 @@
 @import "./headings.css";
 @import "./links.css";
 @import "./blockquotes.css";
+@import "./code.css";
 
 @import "./form/index.css";
 @import "./buttons/index.css";

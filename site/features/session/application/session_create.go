@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	appSession "github.com/4strodev/4stroblog/site/modules/session/domain"
+	appSession "github.com/4strodev/4stroblog/site/features/session/domain"
 	"github.com/4strodev/4stroblog/site/shared/db/models"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"

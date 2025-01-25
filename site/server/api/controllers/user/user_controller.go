@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/4strodev/4stroblog/site/modules/user/services"
+	"github.com/4strodev/4stroblog/site/features/user/services"
 	"github.com/4strodev/4stroblog/site/shared/db"
 	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"

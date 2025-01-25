@@ -1,10 +1,14 @@
 package blog
 
 import (
-	"github.com/4strodev/4stroblog/site/modules/blog"
+	"github.com/4strodev/4stroblog/site/features/blog"
 	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
 )
+
+func NewSiteAdminBlogController() *SiteAdminBlogController {
+	return &SiteAdminBlogController{}
+}
 
 type SiteAdminBlogController struct {
 }

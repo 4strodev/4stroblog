@@ -6,6 +6,10 @@ tasks:
       - start:dev
       - theme:build:watch
 
+  build:
+    dir: './site'
+    cmd: go build -o ./bin/server ./cmd 
+
   start:
     dir: './site'
     cmd: go run ./cmd

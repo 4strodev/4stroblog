@@ -9,8 +9,8 @@ import (
 )
 
 type SitePageController struct {
-	Prefix      string
-	PagesFolder string
+	Prefix      string `wire:",ignore"`
+	PagesFolder string `wire:",ignore"`
 }
 
 func (c *SitePageController) Init(container wiring.Container) error {

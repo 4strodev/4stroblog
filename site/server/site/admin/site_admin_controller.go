@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"log"
 	"strings"
 
 	"github.com/4strodev/4stroblog/site/server/core"
@@ -11,11 +12,22 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
+func NewSiteAdminController(siteAdminBlogController *blog.SiteAdminBlogController) *SiteAdminController {
+	return &SiteAdminController{
+		SiteAdminBlogController: siteAdminBlogController,
+	}
+}
+
 type SiteAdminController struct {
+	SiteAdminBlogController *blog.SiteAdminBlogController
 }
 
 type SessionHeaders struct {
 	Authorization string `header:"Authorization"`
+}
+
+var resolvers = []any{
+	blog.NewSiteAdminBlogController,
 }
 
 func isLoggedOut(ctx fiber.Ctx) (bool, error) {
@@ -77,6 +89,7 @@ func (c *SiteAdminController) Init(container wiring.Container) error {
 				return ctx.Next()
 			}
 
+			log.Println("redirecting")
 			return ctx.Redirect().To("/site/admin")
 		}
 		logIn, err := isLoggedIn(ctx)
@@ -88,7 +101,7 @@ func (c *SiteAdminController) Init(container wiring.Container) error {
 			return ctx.Next()
 		}
 
-		return ctx.Redirect().To("/not-found")
+		return ctx.Redirect().To("/site/not-found")
 	})
 
 	err = derivedContainer.Singleton(func() fiber.Router {
@@ -98,8 +111,19 @@ func (c *SiteAdminController) Init(container wiring.Container) error {
 		return err
 	}
 
+	for _, resolver := range resolvers {
+		err = derivedContainer.Singleton(resolver)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = derivedContainer.Fill(c)
+	if err != nil {
+		return err
+	}
 	return core.LoadNestedControllers(derivedContainer, []core.Controller{
-		&blog.SiteAdminBlogController{},
+		c.SiteAdminBlogController,
 		&page.SitePageController{
 			Prefix:      "/site/admin",
 			PagesFolder: "/admin",

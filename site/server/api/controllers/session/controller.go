@@ -1,7 +1,7 @@
 package session
 
 import (
-	"github.com/4strodev/4stroblog/site/modules/session/application"
+	"github.com/4strodev/4stroblog/site/features/session/application"
 	"github.com/4strodev/4stroblog/site/shared/config"
 	"github.com/4strodev/4stroblog/site/shared/db"
 	wiring "github.com/4strodev/wiring/pkg"
