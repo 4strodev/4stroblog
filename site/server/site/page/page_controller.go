@@ -20,7 +20,8 @@ func (c *SitePageController) Init(container wiring.Container) error {
 		return err
 	}
 
-	router.Get("*", func(ctx fiber.Ctx) error {
+	groupRouter := router.Group(c.Prefix)
+	groupRouter.Get("*", func(ctx fiber.Ctx) error {
 		routePath := ctx.Path()
 		subPage := strings.TrimPrefix(routePath, c.Prefix)
 		page := filepath.Join("pages", c.PagesFolder, subPage)

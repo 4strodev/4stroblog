@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"log"
 	"strings"
 
 	"github.com/4strodev/4stroblog/site/server/core"
@@ -89,7 +88,6 @@ func (c *SiteAdminController) Init(container wiring.Container) error {
 				return ctx.Next()
 			}
 
-			log.Println("redirecting")
 			return ctx.Redirect().To("/site/admin")
 		}
 		logIn, err := isLoggedIn(ctx)

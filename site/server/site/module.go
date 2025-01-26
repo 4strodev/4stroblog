@@ -10,10 +10,10 @@ import (
 
 var SiteModule = core.Module{
 	Controllers: []core.Controller{
-		&SiteController{},
 		&page.SitePageController{
 			Prefix: "/site",
 		},
+		&SiteController{},
 	},
 	Imports: []core.Module{
 		session.SiteSessionModule,

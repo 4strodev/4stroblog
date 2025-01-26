@@ -19,7 +19,7 @@ func (c *SiteBlogController) Init(container wiring.Container) error {
 	if err != nil {
 		return err
 	}
-	blogRouter := router.Group("/blog")
+	blogRouter := router.Group("/site/blog")
 
 	blogRouter.Get("/render/post/:title", func(ctx fiber.Ctx) error {
 		// Get post metadata

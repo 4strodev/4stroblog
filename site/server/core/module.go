@@ -19,7 +19,7 @@ type Module struct {
 }
 
 func (m *Module) init(container wiring.Container) error {
-	m.container = container
+	m.container = extended.Derived(container)
 
 	for _, resolver := range m.Singletons {
 		err := m.container.Singleton(resolver)
@@ -36,8 +36,7 @@ func (m *Module) init(container wiring.Container) error {
 	}
 
 	for _, module := range m.Imports {
-		derivedCotnainer := extended.Derived(m.container)
-		err := module.init(derivedCotnainer)
+		err := module.init(m.container)
 		if err != nil {
 			return err
 		}
