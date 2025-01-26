@@ -7,3 +7,8 @@ services:
       PORT: 3000
     ports:
       - 3000:3000
+    volumes:
+      - "./site/views:/app/site/views"
+      - "./site/uploads:/app/site/uploads"
+      - "./site/config:/app/site/config"
+      - "./site/assets:/app/site/assets"
