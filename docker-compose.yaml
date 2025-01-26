@@ -11,4 +11,3 @@ services:
       - "./site/views:/app/site/views"
       - "./site/uploads:/app/site/uploads"
       - "./site/config:/app/site/config"
-      - "./site/assets:/app/site/assets"

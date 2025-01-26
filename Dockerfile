@@ -20,9 +20,6 @@ RUN cd theme && pnpm i --frozen-lockfile && pnpm build
 FROM base-golang AS build
 WORKDIR /app
 COPY --from=theme /app/site site
-COPY go-markdown-emoji go-markdown-emoji
-#COPY go.work go.work
-#COPY go.work.sum go.work.sum
 COPY Taskfile.yaml Taskfile.yaml
 
 RUN task build
@@ -32,5 +29,6 @@ FROM gcr.io/distroless/static:latest
 WORKDIR /app/site
 
 COPY --from=build /app/site/bin/server server
+COPY --from=build /app/site/assets assets
 
 CMD ["/app/site/server"]
