@@ -30,5 +30,8 @@ WORKDIR /app/site
 
 COPY --from=build /app/site/bin/server server
 COPY --from=build /app/site/assets assets
+COPY --from=build /app/site/views views
+COPY --from=build /app/site/uploads uploads
+COPY --from=build /app/site/config config
 
 CMD ["/app/site/server"]
