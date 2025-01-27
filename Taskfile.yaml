@@ -9,6 +9,8 @@ tasks:
   build:
     dir: './site'
     cmd: go build -o ./bin/server ./cmd 
+    env:
+      CGO_ENABLED: 1
 
   start:
     dir: './site'

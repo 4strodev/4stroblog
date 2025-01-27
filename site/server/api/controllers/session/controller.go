@@ -3,19 +3,16 @@ package session
 import (
 	"github.com/4strodev/4stroblog/site/features/session/application"
 	"github.com/4strodev/4stroblog/site/shared/config"
-	"github.com/4strodev/4stroblog/site/shared/db"
 	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
+	"gorm.io/gorm"
 )
 
 type SessionController struct {
+	Db *gorm.DB
 }
 
-func (init *SessionController) Init(container wiring.Container) error {
-	db, err := db.GetDbInstance()
-	if err != nil {
-		return err
-	}
+func (c *SessionController) Init(container wiring.Container) error {
 	config, err := config.GetConfig()
 	if err != nil {
 		return err
@@ -30,7 +27,7 @@ func (init *SessionController) Init(container wiring.Container) error {
 	group := router.Group("/session")
 	group.Post("/login", func(ctx fiber.Ctx) error {
 		loginService := application.SessionService{
-			DB:     db,
+			DB:     c.Db,
 			Config: config,
 		}
 		body := application.SessionCreateReq{}

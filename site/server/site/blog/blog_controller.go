@@ -6,10 +6,6 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-func NewSiteBlogController() *SiteBlogController {
-	return &SiteBlogController{}
-}
-
 type SiteBlogController struct {
 }
 

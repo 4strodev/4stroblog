@@ -6,10 +6,6 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-func NewSiteAdminBlogController() *SiteAdminBlogController {
-	return &SiteAdminBlogController{}
-}
-
 type SiteAdminBlogController struct {
 }
 
@@ -24,7 +20,7 @@ func (c *SiteAdminBlogController) Init(container wiring.Container) error {
 		return err
 	}
 
-	blogRouter := router.Group("/blog")
+	blogRouter := router.Group("/site/admin/blog")
 	blogRouter.Post("/md-render", func(ctx fiber.Ctx) error {
 		body := RenderMDReqDTO{}
 		err := ctx.Bind().Body(&body)

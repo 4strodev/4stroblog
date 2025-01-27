@@ -13,19 +13,13 @@ type SiteSessionController struct {
 	sessionService *application.SessionService
 }
 
-func NewSiteSessionController(sessionService *application.SessionService) *SiteSessionController {
-	return &SiteSessionController{
-		sessionService: sessionService,
-	}
-}
-
 func (c *SiteSessionController) Init(container pkg.Container) error {
 	var router fiber.Router
 	err := container.Resolve(&router)
 	if err != nil {
 		return err
 	}
-	group := router.Group("/session")
+	group := router.Group("/site/session")
 
 	group.Post("/", func(ctx fiber.Ctx) error {
 		var body struct {

@@ -2,20 +2,17 @@ package user
 
 import (
 	"github.com/4strodev/4stroblog/site/features/user/services"
-	"github.com/4strodev/4stroblog/site/shared/db"
 	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
+	"gorm.io/gorm"
 )
 
 type UserController struct {
+	Db *gorm.DB
 }
 
-func (init *UserController) Init(container wiring.Container) error {
-	db, err := db.GetDbInstance()
-	if err != nil {
-		return err
-	}
-
+func (c *UserController) Init(container wiring.Container) error {
+	var err error
 	var router fiber.Router
 	err = container.Resolve(&router)
 	if err != nil {
@@ -25,7 +22,7 @@ func (init *UserController) Init(container wiring.Container) error {
 	group := router.Group("/user")
 	group.Post("/register", func(ctx fiber.Ctx) error {
 		registerService := services.RegisterService{
-			DB: db,
+			DB: c.Db,
 		}
 		body := services.RegisterReqDTO{}
 		err := ctx.Bind().Body(&body)
