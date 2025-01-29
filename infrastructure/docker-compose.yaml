@@ -1,0 +1,27 @@
+services:
+  minio:
+    image: minio/minio:latest
+    restart: always
+    container_name: minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: s3cretMinio
+    volumes:
+      - ./data:/data
+    command: server /data --console-address ":9001"
+
+  4stroblog:
+    build: ../packages
+    restart: always
+    container_name: 4stroblog
+    environment:
+      PORT: 3000
+    ports:
+      - 3000:3000
+    volumes:
+      - "./site/views:/app/site/views"
+      - "./site/uploads:/app/site/uploads"
+      - "./site/config:/app/site/config"

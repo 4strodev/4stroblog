@@ -12,10 +12,15 @@ type Config struct {
 	JWK struct {
 		Secret string `koanf:"secret"`
 	} `koanf:"jwk"`
-	Storage struct {
+	Db struct {
 		Sqlite struct {
 			Path string `koanf:"path"`
 		} `koanf:"sqlite"`
+	} `koanf:"db"`
+	Storage struct {
+		S3 struct {
+			Url string `koanf:"url"`
+		} `koanf:"s3"`
 	} `koanf:"storage"`
 }
 

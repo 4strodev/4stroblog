@@ -14,13 +14,13 @@ var appModels = []any{
 }
 var dbInstance *gorm.DB
 
-func GetDbInstance(config config.Config) (*gorm.DB, error) {
+func NewDb(config config.Config) (*gorm.DB, error) {
 	if dbInstance != nil {
 		return dbInstance, nil
 	}
 
 	var err error
-	dbInstance, err = gorm.Open(sqlite.Open(config.Storage.Sqlite.Path), &gorm.Config{})
+	dbInstance, err = gorm.Open(sqlite.Open(config.Db.Sqlite.Path), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}

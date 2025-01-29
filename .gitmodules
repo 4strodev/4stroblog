@@ -1,6 +1,6 @@
-[submodule "go-markdown-emoji"]
-	path = go-markdown-emoji
-	url = git@github.com:4strodev/go-markdown-emoji
-[submodule "wiring"]
-	path = wiring
+[submodule "packages/wiring"]
+	path = packages/wiring
+	url = git@github.com:4strodev/wiring
+[submodule "packages/go-markdown-emoji"]
+	path = packages/go-markdown-emoji
 	url = git@github.com:4strodev/wiring

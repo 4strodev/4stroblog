@@ -1,0 +1,4 @@
+.dev.env
+/assets
+/uploads
+/bin
