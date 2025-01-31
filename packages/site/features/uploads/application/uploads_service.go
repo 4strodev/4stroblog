@@ -3,13 +3,14 @@ package application
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
+	"fmt"
 	"io"
+	"time"
 
 	"github.com/4strodev/4stroblog/site/features/uploads/domain"
 	"github.com/4strodev/4stroblog/site/shared/db/models"
+	"github.com/4strodev/4stroblog/site/shared/s3"
 	"github.com/minio/minio-go/v7"
 	"gorm.io/gorm"
 )
@@ -26,34 +27,48 @@ type UploadsService struct {
 	S3 *minio.Client
 }
 
-func (s *UploadsService) SaveFile() error {
-	var upload domain.Upload
-	if upload.Content == nil {
-		return errors.New("cannot upload an upload with no content")
+// Saves a file directly to s3 returning an error if something happens. It does not do any modification
+// to the upload content. It just adds the time if it is missing.
+// If the content is nil it returns an error
+func (s *UploadsService) SaveFile(ctx context.Context, uploadFile domain.Upload) error {
+	if uploadFile.Content == nil {
+		return errors.New("cannot upload an file with no content")
+	}
+
+	if uploadFile.Time.IsZero() {
+		uploadFile.Time = time.Now()
 	}
 
 	var buffer bytes.Buffer
-	var contentReader = io.TeeReader(upload.Content, &buffer)
-
-	content, err := io.ReadAll(contentReader)
+	_, err := io.Copy(&buffer, uploadFile.Content)
 	if err != nil {
 		return err
 	}
-	checksum := sha256.Sum256(content)
-	upload.Hash = hex.Dump(checksum[:])
 
-	var ctx = context.Background()
-	_, err = s.S3.PutObject(ctx, "uploads", upload.Hash, &buffer, int64(buffer.Len()), minio.PutObjectOptions{})
+	fileName := fmt.Sprintf("%s_%s", uploadFile.Time, uploadFile.Name)
+	uploadInfo, err := s.S3.PutObject(
+		ctx, s3.UPLOADS_BUCKET,
+		fileName,
+		uploadFile.Content,
+		int64(buffer.Len()),
+		minio.PutObjectOptions{Checksum: minio.ChecksumSHA256})
 	if err != nil {
 		return err
 	}
+	uploadFile.Hash = uploadInfo.ChecksumSHA256
 
 	uploadModel := models.Upload{
-		ID:       upload.ID,
-		Hash:     upload.Hash,
-		Name:     upload.Name,
-		MimeType: upload.MimeType,
+		ID:       uploadFile.ID,
+		Hash:     uploadFile.Hash,
+		Name:     uploadFile.Name,
+		MimeType: uploadFile.MimeType,
+		Time:     uploadFile.Time,
 	}
 
-	s.Db.Save()
+	err = s.Db.WithContext(ctx).Save(uploadModel).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

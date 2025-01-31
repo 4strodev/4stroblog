@@ -36,7 +36,7 @@ func (c *SessionController) Init(container wiring.Container) error {
 			return err
 		}
 
-		response, err := loginService.Create(body)
+		response, err := loginService.Create(ctx.Context(), body)
 		if err != nil {
 			return err
 		}

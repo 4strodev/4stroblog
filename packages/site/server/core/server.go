@@ -1,9 +1,11 @@
 package core
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
+	"log/slog"
 	"net/http"
 	"runtime/debug"
 
@@ -18,22 +20,23 @@ type Server struct {
 	Wiring      wiring.Container
 	fiber       *fiber.App
 	middlewares []fiber.Handler
-	modules     []Module
+	modules     []*Module
+	logger      *slog.Logger
 }
 
 func (s *Server) AddModule(module Module) {
-	s.modules = append(s.modules, module)
+	s.modules = append(s.modules, &module)
 }
 
 func (s *Server) AddMiddleware(handler fiber.Handler) {
 	s.middlewares = append(s.middlewares, handler)
 }
 
-func (s *Server) Start(port int) error {
+// Init initialize server dependencies and modules to be ready to start listening requests
+func (s *Server) Init() error {
 	if s.Wiring == nil {
 		s.Wiring = wiring.New()
 	}
-	addr := fmt.Sprintf(":%d", port)
 	viewsEngine := html.New("./views", ".html")
 	viewsEngine.AddFunc("renderPost", func(post string) string {
 		content, err := blog.RenderPost(post)
@@ -87,10 +90,39 @@ func (s *Server) Start(port int) error {
 	}
 
 	for _, module := range s.modules {
-		err := module.init(s.Wiring)
+		err := module.initDependencies(s.Wiring)
 		if err != nil {
 			return err
 		}
 	}
-	return s.fiber.Listen(addr)
+
+	err = s.Wiring.Resolve(&s.logger)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Server) Start(port int) error {
+	if s.fiber == nil {
+		return errors.New("server not initialized")
+	}
+
+	for _, module := range s.modules {
+		err := module.initControllers()
+		if err != nil {
+			return err
+		}
+	}
+
+	s.fiber.Hooks().OnListen(func(data fiber.ListenData) error {
+		s.logger.Info("server started", "host", data.Host, "port", data.Port)
+		return nil
+	})
+
+	addr := fmt.Sprintf(":%d", port)
+	return s.fiber.Listen(addr, fiber.ListenConfig{
+		DisableStartupMessage: true,
+	})
 }

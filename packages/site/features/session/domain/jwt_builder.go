@@ -28,7 +28,7 @@ func (b *JWTBuilder) Build(session Session) (JWTBuild, error) {
 		return build, fmt.Errorf("jwt secret not set")
 	}
 
-	signer, err := jwt.NewSignerHS(jwt.HS256, []byte(b.secret))
+	signer, err := jwt.NewSignerHS(SIGNER_ALGORITHM, []byte(b.secret))
 	if err != nil {
 		return build, fmt.Errorf("error creating jwt signer: %w", err)
 	}

@@ -1,6 +1,7 @@
 package application
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -24,32 +25,38 @@ type SessionCreateRes struct {
 	ProfileID      uuid.UUID `json:"profileId"`
 }
 
-func (s *SessionService) Create(req SessionCreateReq) (SessionCreateRes, error) {
+func (s *SessionService) Create(ctx context.Context, req SessionCreateReq) (response SessionCreateRes, err error) {
 	email, password := req.User, req.Password
 	var session appSession.Session
-	var response SessionCreateRes
 	var profile models.Profile
 
 	// Getting user profile
-	err := s.DB.First(&profile, "email = ?", email).Error
+	err = s.DB.WithContext(ctx).First(&profile, "email = ?", email).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return response, fmt.Errorf("user not found")
 		}
-		return response, fmt.Errorf("error getting user from database: %w", err)
+		return
 	}
 
 	// Checking password match
+	if err = ctx.Err(); err != nil {
+		return
+	}
 	err = bcrypt.CompareHashAndPassword([]byte(profile.Password), []byte(password))
 	if err != nil {
-		return response, fmt.Errorf("password does not match: %w", err)
+		err = fmt.Errorf("password does not match: %w", err)
+		return
 	}
 
 	// Building session
+	if err = ctx.Err(); err != nil {
+		return
+	}
 	sessionBuilder := appSession.SessionBuilder{}
 	session, err = sessionBuilder.Build(profile)
 	if err != nil {
-		return response, err
+		return
 	}
 	sessionModel := models.Session{
 		ID:             session.ID,
@@ -57,12 +64,16 @@ func (s *SessionService) Create(req SessionCreateReq) (SessionCreateRes, error) 
 		ExpirationTime: session.ExpriationTime,
 	}
 
-	s.DB.Create(&sessionModel)
+	// Saving session to database
+	err = s.DB.WithContext(ctx).Create(&sessionModel).Error
+	if err != nil {
+		return
+	}
 	response = SessionCreateRes{
 		ID:             session.ID,
 		UserID:         session.UserID,
 		ExpirationTime: session.ExpriationTime,
 		ProfileID:      session.ProfileID,
 	}
-	return response, nil
+	return
 }

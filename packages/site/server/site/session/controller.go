@@ -36,7 +36,7 @@ func (c *SiteSessionController) Init(container pkg.Container) error {
 			Password: body.Password,
 		}
 
-		res, err := c.sessionService.Create(req)
+		res, err := c.sessionService.Create(ctx.Context(), req)
 		if err != nil {
 			return err
 		}

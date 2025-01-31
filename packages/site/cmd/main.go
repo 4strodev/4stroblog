@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"os"
 	"strconv"
 
@@ -26,5 +27,19 @@ func main() {
 	s.AddModule(site.SiteModule)
 	s.AddModule(api.ApiModule)
 
-	log.Fatal(s.Start(int(port)))
+	err = s.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var logger *slog.Logger
+	err = container.Resolve(&logger)
+	if err != nil {
+		log.Fatal("no logger resolved: ", err)
+	}
+
+	err = s.Start(int(port))
+	if err != nil {
+		logger.Error(err.Error())
+	}
 }

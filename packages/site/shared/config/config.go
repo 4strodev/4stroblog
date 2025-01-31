@@ -9,6 +9,12 @@ import (
 )
 
 type Config struct {
+	Environment struct {
+		// GodMode allows you to access to all restricted
+		// sections of the site. Use it to test integrations and
+		// features hidden to public users
+		GodMode bool `koanf:"god_mode"`
+	} `koanf:"environment"`
 	JWK struct {
 		Secret string `koanf:"secret"`
 	} `koanf:"jwk"`

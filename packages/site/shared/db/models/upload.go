@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -11,4 +13,5 @@ type Upload struct {
 	Hash     string
 	Name     string
 	MimeType string
+	Time     time.Time
 }

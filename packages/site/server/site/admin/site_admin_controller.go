@@ -1,20 +1,24 @@
 package admin
 
 import (
+	"log/slog"
 	"strings"
 
+	"github.com/4strodev/4stroblog/site/features/session/domain"
 	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/gofiber/fiber/v3"
 )
 
 type SiteAdminController struct {
+	JwtVerify *domain.JwtVerify
+	Logger    *slog.Logger
 }
 
 type SessionHeaders struct {
 	Authorization string `header:"Authorization"`
 }
 
-func isLoggedOut(ctx fiber.Ctx) (bool, error) {
+func (c SiteAdminController) isLoggedOut(ctx fiber.Ctx) (bool, error) {
 	headers := SessionHeaders{}
 	err := ctx.Bind().Header(&headers)
 	if err != nil {
@@ -28,7 +32,7 @@ func isLoggedOut(ctx fiber.Ctx) (bool, error) {
 	return false, nil
 }
 
-func isLoggedIn(ctx fiber.Ctx) (bool, error) {
+func (c SiteAdminController) isLoggedIn(ctx fiber.Ctx) (bool, error) {
 	headers := SessionHeaders{}
 	err := ctx.Bind().Header(&headers)
 	if err != nil {
@@ -46,10 +50,16 @@ func isLoggedIn(ctx fiber.Ctx) (bool, error) {
 
 	token := splitHeader[1]
 	// Check token
-	return isTokenValid(token), nil
+	return c.isTokenValid(token), nil
 }
 
-func isTokenValid(token string) bool {
+func (c SiteAdminController) isTokenValid(token string) bool {
+	err := c.JwtVerify.Verify(token)
+
+	if err != nil {
+		c.Logger.Warn("invalid token provided")
+		return false
+	}
 	return true
 }
 
@@ -63,7 +73,7 @@ func (c *SiteAdminController) Init(container wiring.Container) error {
 
 	adminRouter.Use(func(ctx fiber.Ctx) error {
 		if strings.HasPrefix(ctx.Path(), "/site/admin/session") {
-			logOut, err := isLoggedOut(ctx)
+			logOut, err := c.isLoggedOut(ctx)
 			if err != nil {
 				return err
 			}
@@ -74,7 +84,7 @@ func (c *SiteAdminController) Init(container wiring.Container) error {
 
 			return ctx.Redirect().To("/site/admin")
 		}
-		logIn, err := isLoggedIn(ctx)
+		logIn, err := c.isLoggedIn(ctx)
 		if err != nil {
 			return err
 		}

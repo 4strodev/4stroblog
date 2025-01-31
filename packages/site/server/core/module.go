@@ -1,6 +1,8 @@
 package core
 
 import (
+	"errors"
+
 	wiring "github.com/4strodev/wiring/pkg"
 	"github.com/4strodev/wiring/pkg/extended"
 )
@@ -18,25 +20,28 @@ type Module struct {
 	ExportTransients []any
 }
 
-func (m *Module) init(container wiring.Container) error {
+// initDependencies initialies the dependency graph of the modules. Then
+// the container can be accessed to resolve global dependencies before starting
+// controllers
+func (m *Module) initDependencies(container wiring.Container) error {
 	m.container = extended.Derived(container)
 
 	for _, resolver := range m.Singletons {
-		err := m.container.Singleton(resolver)
+		err := container.Singleton(resolver)
 		if err != nil {
 			return err
 		}
 	}
 
 	for _, resolver := range m.Transients {
-		err := m.container.Transient(resolver)
+		err := container.Transient(resolver)
 		if err != nil {
 			return err
 		}
 	}
 
 	for _, module := range m.Imports {
-		err := module.init(m.container)
+		err := module.initDependencies(m.container)
 		if err != nil {
 			return err
 		}
@@ -54,6 +59,30 @@ func (m *Module) init(container wiring.Container) error {
 				return err
 			}
 		}
+	}
+
+	for _, resolver := range m.ExportSingletons {
+		err := container.Singleton(resolver)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, resolver := range m.ExportTransients {
+		err := container.Transient(resolver)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// initControllers starts the controllers on the module graph
+// if the dependency graph was not
+func (m *Module) initControllers() error {
+	if m.container == nil {
+		return errors.New("dependencies not initialized")
 	}
 
 	for _, controller := range m.Controllers {
