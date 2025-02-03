@@ -8,11 +8,11 @@ import (
 
 var SiteAdminModule = core.Module{
 	Controllers: []core.Controller{
+		&SiteAdminController{},
+		&blog.SiteAdminBlogController{},
 		&page.SitePageController{
 			Prefix:      "/site/admin",
 			PagesFolder: "/admin",
 		},
-		&SiteAdminController{},
-		&blog.SiteAdminBlogController{},
 	},
 }

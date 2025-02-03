@@ -15,9 +15,9 @@ var SiteModule = core.Module{
 		},
 		&SiteController{},
 	},
-	Imports: []core.Module{
-		session.SiteSessionModule,
-		blog.SiteBlogModule,
-		admin.SiteAdminModule,
+	Imports: []*core.Module{
+		&session.SiteSessionModule,
+		&blog.SiteBlogModule,
+		&admin.SiteAdminModule,
 	},
 }

@@ -14,7 +14,7 @@ type Module struct {
 	Controllers []Controller
 	Singletons  []any
 	Transients  []any
-	Imports     []Module
+	Imports     []*Module
 
 	ExportSingletons []any
 	ExportTransients []any
@@ -83,6 +83,13 @@ func (m *Module) initDependencies(container wiring.Container) error {
 func (m *Module) initControllers() error {
 	if m.container == nil {
 		return errors.New("dependencies not initialized")
+	}
+
+	for _, module := range m.Imports {
+		err := module.initControllers()
+		if err != nil {
+			return err
+		}
 	}
 
 	for _, controller := range m.Controllers {

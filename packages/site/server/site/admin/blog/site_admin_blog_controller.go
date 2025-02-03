@@ -20,8 +20,7 @@ func (c *SiteAdminBlogController) Init(container wiring.Container) error {
 		return err
 	}
 
-	blogRouter := router.Group("/site/admin/blog")
-	blogRouter.Post("/md-render", func(ctx fiber.Ctx) error {
+	router.Post("/site/admin/blog/md-render", func(ctx fiber.Ctx) error {
 		body := RenderMDReqDTO{}
 		err := ctx.Bind().Body(&body)
 		if err != nil {

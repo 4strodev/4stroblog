@@ -10,7 +10,7 @@ import (
 )
 
 type SiteAdminController struct {
-	JwtVerify *domain.JwtVerify
+	JwtVerify domain.JwtVerify
 	Logger    *slog.Logger
 }
 
@@ -69,9 +69,8 @@ func (c *SiteAdminController) Init(container wiring.Container) error {
 	if err != nil {
 		return err
 	}
-	adminRouter := router.Group("/admin")
 
-	adminRouter.Use(func(ctx fiber.Ctx) error {
+	router.Use("/site/admin", func(ctx fiber.Ctx) error {
 		if strings.HasPrefix(ctx.Path(), "/site/admin/session") {
 			logOut, err := c.isLoggedOut(ctx)
 			if err != nil {
