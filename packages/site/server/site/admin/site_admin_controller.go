@@ -5,12 +5,12 @@ import (
 	"strings"
 
 	"github.com/4strodev/4stroblog/site/features/session/domain"
-	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 )
 
 type SiteAdminController struct {
-	JwtVerify domain.JwtVerify
+	JwtVerifier *domain.JwtVerify
 	Logger    *slog.Logger
 }
 
@@ -54,7 +54,7 @@ func (c SiteAdminController) isLoggedIn(ctx fiber.Ctx) (bool, error) {
 }
 
 func (c SiteAdminController) isTokenValid(token string) bool {
-	err := c.JwtVerify.Verify(token)
+	err := c.JwtVerifier.Verify(token)
 
 	if err != nil {
 		c.Logger.Warn("invalid token provided")
@@ -63,9 +63,8 @@ func (c SiteAdminController) isTokenValid(token string) bool {
 	return true
 }
 
-func (c *SiteAdminController) Init(container wiring.Container) error {
-	var router fiber.Router
-	err := container.Resolve(&router)
+func (c *SiteAdminController) Init(cont *container.Container) error {
+	router, err := container.Resolve[fiber.Router](cont)
 	if err != nil {
 		return err
 	}

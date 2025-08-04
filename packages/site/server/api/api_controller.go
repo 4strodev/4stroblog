@@ -4,8 +4,7 @@ import (
 	"github.com/4strodev/4stroblog/site/server/api/controllers/session"
 	"github.com/4strodev/4stroblog/site/server/api/controllers/user"
 	"github.com/4strodev/4stroblog/site/server/core"
-	wiring "github.com/4strodev/wiring/pkg"
-	"github.com/4strodev/wiring/pkg/extended"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -17,16 +16,15 @@ var controllers = []core.Controller{
 type ApiController struct {
 }
 
-func (c *ApiController) Init(container wiring.Container) error {
+func (c *ApiController) Init(cont *container.Container) error {
 	// Replace router by group router
-	var router fiber.Router
-	err := container.Resolve(&router)
+	router, err := container.Resolve[fiber.Router](cont)
 	if err != nil {
 		return err
 	}
 	api := router.Group("/api")
 
-	extendedContainer := extended.Derived(container)
+	extendedContainer := cont.Derived()
 	err = extendedContainer.Singleton(func() fiber.Router {
 		return api
 	})

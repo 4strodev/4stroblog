@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/4strodev/4stroblog/site/shared/config"
 	"github.com/cristalhq/jwt/v5"
 )
 
@@ -13,10 +14,16 @@ type JwtVerify struct {
 	verifier jwt.Verifier
 }
 
-func NewJwtVerify(secret string) JwtVerify {
-	return JwtVerify{
-		secret: secret,
+func NewJwtVerify(cfg config.Config) (*JwtVerify, error) {
+	verifier := JwtVerify{
+		secret: cfg.Auth.JWK.Secret,
 	}
+	err := verifier.ensureVerifierIsSet()
+	if err != nil {
+		return &verifier, err
+	}
+
+	return &verifier, nil
 }
 
 const SIGNER_ALGORITHM = jwt.HS256

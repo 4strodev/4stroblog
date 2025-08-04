@@ -1,10 +1,12 @@
 module github.com/4strodev/4stroblog/site
 
-go 1.23.0
+go 1.24.2
+
+toolchain go1.24.4
 
 require (
 	github.com/4strodev/go-markdown-emoji v1.0.4
-	github.com/4strodev/wiring v1.1.0
+	github.com/4strodev/wiring_graphs v1.0.0-beta
 	github.com/cristalhq/jwt/v5 v5.4.0
 	github.com/gofiber/fiber/v3 v3.0.0-beta.3
 	github.com/gofiber/template/html/v2 v2.1.2
@@ -52,3 +54,5 @@ require (
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 )
+
+replace github.com/4strodev/wiring_graphs v1.0.0-beta => ../../../go/wiring_workspace/wiring

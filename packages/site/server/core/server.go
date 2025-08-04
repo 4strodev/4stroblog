@@ -10,14 +10,14 @@ import (
 	"runtime/debug"
 
 	"github.com/4strodev/4stroblog/site/features/blog"
-	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/static"
 	"github.com/gofiber/template/html/v2"
 )
 
 type Server struct {
-	Wiring      wiring.Container
+	Wiring      *container.Container
 	fiber       *fiber.App
 	middlewares []fiber.Handler
 	modules     []*Module
@@ -35,7 +35,7 @@ func (s *Server) AddMiddleware(handler fiber.Handler) {
 // Init initialize server dependencies and modules to be ready to start listening requests
 func (s *Server) Init() error {
 	if s.Wiring == nil {
-		s.Wiring = wiring.New()
+		s.Wiring = container.New()
 	}
 	viewsEngine := html.New("./views", ".html")
 	viewsEngine.AddFunc("renderPost", func(post string) string {
@@ -96,7 +96,7 @@ func (s *Server) Init() error {
 		}
 	}
 
-	err = s.Wiring.Resolve(&s.logger)
+	s.logger, err = container.Resolve[*slog.Logger](s.Wiring)
 	if err != nil {
 		return err
 	}

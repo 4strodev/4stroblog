@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -10,30 +11,35 @@ import (
 	"github.com/4strodev/4stroblog/site/server/core"
 	"github.com/4strodev/4stroblog/site/server/site"
 	"github.com/4strodev/4stroblog/site/shared"
-	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 )
+
+var appModule = core.Module{
+	Imports: []*core.Module{
+		&shared.SharedModule,
+		&site.SiteModule,
+		&api.ApiModule,
+	},
+}
 
 func main() {
 	port, err := strconv.ParseInt(os.Getenv("PORT"), 0, 32)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("cannot parse PORT env: %w", err))
 	}
 
-	container := wiring.New()
+	cont := container.New()
 
-	s := core.Server{Wiring: container}
+	s := core.Server{Wiring: cont}
 
-	s.AddModule(shared.SharedModule)
-	s.AddModule(site.SiteModule)
-	s.AddModule(api.ApiModule)
+	s.AddModule(appModule)
 
 	err = s.Init()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var logger *slog.Logger
-	err = container.Resolve(&logger)
+	logger, err := container.Resolve[*slog.Logger](cont)
 	if err != nil {
 		log.Fatal("no logger resolved: ", err)
 	}

@@ -1,16 +1,15 @@
 package uploads
 
 import (
-	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 )
 
 type SiteUploadsController struct {
 }
 
-func (c *SiteUploadsController) Init(container wiring.Container) error {
-	var router fiber.Router
-	err := container.Resolve(&router)
+func (c *SiteUploadsController) Init(cont *container.Container) error {
+	router, err := container.Resolve[fiber.Router](cont)
 	if err != nil {
 		return err
 	}

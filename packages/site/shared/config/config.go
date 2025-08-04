@@ -15,9 +15,11 @@ type Config struct {
 		// features hidden to public users
 		GodMode bool `koanf:"god_mode"`
 	} `koanf:"environment"`
-	JWK struct {
-		Secret string `koanf:"secret"`
-	} `koanf:"jwk"`
+	Auth struct {
+		JWK struct {
+			Secret string `koanf:"secret"`
+		} `koanf:"jwk"`
+	} `koanf:"auth"`
 	Db struct {
 		Sqlite struct {
 			Path string `koanf:"path"`

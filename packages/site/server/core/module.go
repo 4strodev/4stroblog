@@ -3,14 +3,13 @@ package core
 import (
 	"errors"
 
-	wiring "github.com/4strodev/wiring/pkg"
-	"github.com/4strodev/wiring/pkg/extended"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 )
 
 // A module is used to contain services and controllers allowing to load them in batch instead of having to manually
 // set resolvers on a container
 type Module struct {
-	container   wiring.Container
+	container   *container.Container
 	Controllers []Controller
 	Singletons  []any
 	Transients  []any
@@ -23,8 +22,8 @@ type Module struct {
 // initDependencies initialies the dependency graph of the modules. Then
 // the container can be accessed to resolve global dependencies before starting
 // controllers
-func (m *Module) initDependencies(container wiring.Container) error {
-	m.container = extended.Derived(container)
+func (m *Module) initDependencies(container *container.Container) error {
+	m.container = container.Derived()
 
 	for _, resolver := range m.Singletons {
 		err := container.Singleton(resolver)
@@ -47,14 +46,14 @@ func (m *Module) initDependencies(container wiring.Container) error {
 		}
 
 		for _, resolver := range module.ExportSingletons {
-			err := m.container.Singleton(resolver)
+			err := container.Singleton(resolver)
 			if err != nil {
 				return err
 			}
 		}
 
 		for _, resolver := range module.ExportTransients {
-			err := m.container.Transient(resolver)
+			err := container.Transient(resolver)
 			if err != nil {
 				return err
 			}

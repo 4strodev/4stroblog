@@ -4,18 +4,17 @@ import (
 	"path/filepath"
 	"strings"
 
-	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 )
 
 type SitePageController struct {
-	Prefix      string `wire:",ignore"`
-	PagesFolder string `wire:",ignore"`
+	Prefix      string `wiring:",omit"`
+	PagesFolder string `wiring:",omit"`
 }
 
-func (c *SitePageController) Init(container wiring.Container) error {
-	var router fiber.Router
-	err := container.Resolve(&router)
+func (c *SitePageController) Init(cont *container.Container) error {
+	router,err := container.Resolve[fiber.Router](cont)
 	if err != nil {
 		return err
 	}

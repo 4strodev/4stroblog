@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/4strodev/4stroblog/site/features/user/services"
-	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 	"gorm.io/gorm"
 )
@@ -11,10 +11,8 @@ type UserController struct {
 	Db *gorm.DB
 }
 
-func (c *UserController) Init(container wiring.Container) error {
-	var err error
-	var router fiber.Router
-	err = container.Resolve(&router)
+func (c *UserController) Init(cont *container.Container) error {
+	router, err := container.Resolve[fiber.Router](cont)
 	if err != nil {
 		return err
 	}

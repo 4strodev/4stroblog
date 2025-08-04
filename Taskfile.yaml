@@ -2,38 +2,46 @@ version: '3'
 
 tasks:
   dev:
+    desc: "Execute application and theme building"
     deps:
       - start:dev
       - theme:build:watch
 
   build:
+    desc: "Build application"
     dir: './packages/site'
     cmd: go build -o ./bin/server ./cmd 
     env:
       CGO_ENABLED: 1
 
   start:
+    desc: "Start application"
     dir: './packages/site'
     cmd: go run ./cmd
 
   start:dev:
+    desc: "Execute application with live reloading"
     dotenv: ['.dev.env']
     dir: './packages/site'
     cmd: arelo -p '**/*.go' -p 'views/**/*' -p 'config/config.toml' -i '**/*_test.go' -- go run ./cmd
 
   theme:build:
+    desc: "Build theme"
     dir: './packages/theme'
     cmd: pnpm build
 
   theme:build:watch:
+    desc: "Build theme in watch mode"
     dir: './packages/theme'
     cmd: pnpm build:watch
 
   docker:start:
+    desc: "Start docker image"
     dir: './infrastructure'
     cmd: docker compose up
 
   docker:init:
+    desc: "Start base container"
     dir: './infrastructure'
     cmds:
       - docker compose up minio

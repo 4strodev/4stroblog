@@ -2,14 +2,14 @@
 package core
 
 import (
-	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 )
 
 type Controller interface {
-	Init(container wiring.Container) error
+	Init(container *container.Container) error
 }
 
-func LoadNestedControllers(container wiring.Container, controllers []Controller) error {
+func LoadNestedControllers(container *container.Container, controllers []Controller) error {
 	for _, controller := range controllers {
 		err := controller.Init(container)
 		if err != nil {

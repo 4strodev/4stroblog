@@ -1,16 +1,15 @@
 package site
 
 import (
-	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 )
 
 type SiteController struct {
 }
 
-func (c *SiteController) Init(container wiring.Container) error {
-	var router fiber.Router
-	err := container.Resolve(&router)
+func (c *SiteController) Init(cont *container.Container) error {
+	router, err := container.Resolve[fiber.Router](cont)
 	if err != nil {
 		return err
 	}

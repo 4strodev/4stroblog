@@ -3,7 +3,7 @@ package session
 import (
 	"github.com/4strodev/4stroblog/site/features/session/application"
 	"github.com/4strodev/4stroblog/site/shared/config"
-	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 	"gorm.io/gorm"
 )
@@ -12,14 +12,13 @@ type SessionController struct {
 	Db *gorm.DB
 }
 
-func (c *SessionController) Init(container wiring.Container) error {
+func (c *SessionController) Init(cont *container.Container) error {
 	config, err := config.GetConfig()
 	if err != nil {
 		return err
 	}
 
-	var router fiber.Router
-	err = container.Resolve(&router)
+	router, err := container.Resolve[fiber.Router](cont)
 	if err != nil {
 		return err
 	}

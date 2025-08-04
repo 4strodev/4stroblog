@@ -2,7 +2,7 @@ package blog
 
 import (
 	"github.com/4strodev/4stroblog/site/features/blog"
-	wiring "github.com/4strodev/wiring/pkg"
+	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -13,9 +13,8 @@ type RenderMDReqDTO struct {
 	Content string `form:"content"`
 }
 
-func (c *SiteAdminBlogController) Init(container wiring.Container) error {
-	var router fiber.Router
-	err := container.Resolve(&router)
+func (c *SiteAdminBlogController) Init(cont *container.Container) error {
+	router, err := container.Resolve[fiber.Router](cont)
 	if err != nil {
 		return err
 	}

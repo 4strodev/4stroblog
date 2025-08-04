@@ -9,14 +9,10 @@ import (
 )
 
 var SharedModule = core.Module{
-	Singletons: []any{
-		config.GetConfig,
-		logger.NewLogger,
-		db.NewDb,
-	},
 	ExportSingletons: []any {
 		db.NewDb,
 		s3.NewS3Client,
 		logger.NewLogger,
+		config.GetConfig,
 	},
 }
