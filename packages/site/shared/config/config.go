@@ -27,7 +27,8 @@ type Config struct {
 	} `koanf:"db"`
 	Storage struct {
 		S3 struct {
-			Url string `koanf:"url"`
+			Url    string `koanf:"url"`
+			Bucket string `koanf:"bucket"`
 		} `koanf:"s3"`
 	} `koanf:"storage"`
 }

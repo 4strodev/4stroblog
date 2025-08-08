@@ -9,6 +9,7 @@ path = "./test.db"
 
 [storage.s3]
 url = "minio:s3cretMinio@localhost:9000"
+bucket = "uploads"
 
 [environment]
 god_mode = true

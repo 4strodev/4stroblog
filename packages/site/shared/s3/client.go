@@ -23,7 +23,7 @@ func NewS3Client(config config.Config) (*minio.Client, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
 	defer cancel()
 
-	err = client.MakeBucket(ctx, "uploads", minio.MakeBucketOptions{})
+	err = client.MakeBucket(ctx, config.Storage.S3.Bucket, minio.MakeBucketOptions{})
 	if err != nil {
 		return nil, err
 	}
