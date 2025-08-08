@@ -21,7 +21,9 @@ func RenderMarkdown(md []byte) []byte {
 	opts := html.RendererOptions{Flags: htmlFlags, RenderNodeHook: emoji.Renderer}
 	renderer := html.NewRenderer(opts)
 
+	// Generate html from parsed markdown
 	rawHtml := markdown.Render(doc, renderer)
+	// Sanitize generated html
 	html := bluemonday.UGCPolicy().SanitizeBytes(rawHtml)
 	return html
 }

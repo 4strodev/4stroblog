@@ -8,6 +8,7 @@ import (
 
 var baseFolder = "./uploads/posts"
 
+// RenderPost renders a post based on their id
 func RenderPost(postId string) ([]byte, error) {
 	fileName := fmt.Sprintf("%s.md", postId)
 	filePath := filepath.Join(baseFolder, fileName)

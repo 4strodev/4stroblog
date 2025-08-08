@@ -5,5 +5,4 @@ toolchain go1.24.4
 use (
 	./go-markdown-emoji
 	./site
-	./wiring
 )
