@@ -7,13 +7,13 @@
 }
 
 .btn-sm {
-    @apply p-2;
+    @apply p-2 text-sm;
 }
 
 .btn-md {
-    @apply p-8;
+    @apply p-3 text-base;
 }
 
 .btn-lg {
-    @apply p-16;
+    @apply p-4 text-lg;
 }

@@ -10,7 +10,7 @@ import (
 )
 
 type SiteSessionController struct {
-	sessionService *application.SessionService
+	SessionService *application.SessionService
 }
 
 func (c *SiteSessionController) Init(cont *container.Container) error {
@@ -35,7 +35,7 @@ func (c *SiteSessionController) Init(cont *container.Container) error {
 			Password: body.Password,
 		}
 
-		res, err := c.sessionService.Create(ctx.Context(), req)
+		res, err := c.SessionService.Create(ctx.Context(), req)
 		if err != nil {
 			return err
 		}

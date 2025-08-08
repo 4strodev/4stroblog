@@ -1,13 +1,16 @@
 <h1>Admin login</h1>
-<form class="card">
-    <div>
-        <label for="user">User</label>
-        <input class="form-control" type="text" name="user" id="user">
-    </div>
+<form class="card flex flex-col gap-4 sm:items-center" hx-post="/site/session" hx-trigger="submit">
+    <div class="flex w-full gap-2 flex-col sm:flex-row">
+        <div class="flex flex-col flex-1">
+            <label for="user">User</label>
+            <input class="form-control" type="text" name="user" id="user">
+        </div>
 
-    <div>
-        <label for="password">Password</label>
-        <input class="form-control" type="password" name="password" id="password">
+        <div class="flex flex-col flex-1">
+            <label for="password">Password</label>
+            <input class="form-control" type="password" name="password" id="password">
+        </div>
     </div>
-    <a href="/site/admin/session/forgot-password">I forgot my password</a>
+    <button type="submit" class="btn-primary btn-sm sm:max-w-32">Login</button>
+    <a class="text-center" href="/site/admin/session/forgot-password">I forgot my password</a>
 </form>

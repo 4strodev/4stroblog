@@ -1,6 +1,6 @@
 <div class="size-full flex gap-4 flex-col md:flex-row">
     <!--Editor-->
-    <form class="w-full" id="editor" hx-post="/site/admin/blog/md-render" hx-trigger="keyup changed" hx-target="#container">
+    <form class="w-full" id="editor" hx-post="/site/admin/blog/md-render" hx-trigger="load, input changed delay:500ms" hx-target="#container">
         <textarea class="form-control w-full" id="content" name="content" rows="20"></textarea>
     </form>
 
