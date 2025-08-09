@@ -23,7 +23,7 @@ tasks:
     desc: "Execute application with live reloading"
     dotenv: ['.dev.env']
     dir: './packages/site'
-    cmd: arelo -p '**/*.go' -p 'views/**/*' -p 'config/config.toml' -i '**/*_test.go' -- go run ./cmd
+    cmd: arelo -p '**/*.go' -p 'views/**/*' -p 'config/**/*' -i '**/*_test.go' -- go run ./cmd
 
   theme:build:
     desc: "Build theme"

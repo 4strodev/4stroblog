@@ -13,3 +13,6 @@ bucket = "uploads"
 
 [environment]
 god_mode = true
+
+[i18n]
+folder = "./config/i18n"

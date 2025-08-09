@@ -31,6 +31,9 @@ type Config struct {
 			Bucket string `koanf:"bucket"`
 		} `koanf:"s3"`
 	} `koanf:"storage"`
+	I18n struct {
+		Folder string `koanf:"folder"`
+	} `koanf:"i18n"`
 }
 
 var config Config

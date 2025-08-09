@@ -10,6 +10,7 @@ import (
 	"runtime/debug"
 
 	"github.com/4strodev/4stroblog/site/features/blog"
+	"github.com/4strodev/4stroblog/site/shared/i18n"
 	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/static"
@@ -22,6 +23,7 @@ type Server struct {
 	middlewares []fiber.Handler
 	modules     []*Module
 	logger      *slog.Logger
+	viewsEngine *html.Engine
 }
 
 func (s *Server) AddModule(module Module) {
@@ -37,26 +39,43 @@ func (s *Server) Init() error {
 	if s.Wiring == nil {
 		s.Wiring = container.New()
 	}
-	viewsEngine := html.New("./views", ".html")
-	viewsEngine.AddFunc("renderPost", func(post string) string {
-		content, err := blog.RenderPost(post)
-		if err != nil {
-			return ""
-		}
+	s.viewsEngine = html.New("./views", ".html")
 
-		return string(content)
+	// setup dependencies
+	err := s.Wiring.Singleton(func() fiber.Router {
+		return s.fiber
 	})
-	viewsEngine.AddFunc("unescape", func(s string) template.HTML {
-		return template.HTML(s)
-	})
+	if err != nil {
+		return err
+	}
+	for _, module := range s.modules {
+		err := module.initDependencies(s.Wiring)
+		if err != nil {
+			return err
+		}
+	}
+
+	// setup logger
+	s.logger, err = container.Resolve[*slog.Logger](s.Wiring)
+	if err != nil {
+		return err
+	}
+
+	// Views need dependencies to be initialized
+	err = s.setupViews()
+	if err != nil {
+		return err
+	}
 
 	s.fiber = fiber.New(fiber.Config{
-		Views: viewsEngine,
+		Views: s.viewsEngine,
 		ErrorHandler: func(ctx fiber.Ctx, err error) error {
-			log.Println(err)
+			s.logger.Error(err.Error())
 			return ctx.Status(http.StatusInternalServerError).SendString(err.Error())
 		},
 	})
+
+	// recover middleware
 	s.fiber.Use(func(ctx fiber.Ctx) error {
 		defer func() {
 			r := recover()
@@ -65,10 +84,10 @@ func (s *Server) Init() error {
 			}
 
 			debug.PrintStack()
-			s := fmt.Sprint(r)
-			log.Println(s)
+			strContent := fmt.Sprint(r)
+			s.logger.Error("catched error", "stack", strContent)
 
-			err := ctx.Status(http.StatusInternalServerError).SendString(s)
+			err := ctx.Status(http.StatusInternalServerError).SendString(strContent)
 			if err != nil {
 				log.Println(err)
 			}
@@ -78,28 +97,40 @@ func (s *Server) Init() error {
 	s.fiber.Get("/assets/*", static.New("./assets"))
 	s.fiber.Get("/uploads/*", static.New("./uploads"))
 
-	err := s.Wiring.Singleton(func() fiber.Router {
-		return s.fiber
-	})
-	if err != nil {
-		return err
-	}
-
 	for _, middleware := range s.middlewares {
 		s.fiber.Use(middleware)
 	}
 
-	for _, module := range s.modules {
-		err := module.initDependencies(s.Wiring)
-		if err != nil {
-			return err
-		}
-	}
+	return nil
+}
 
-	s.logger, err = container.Resolve[*slog.Logger](s.Wiring)
+func (s *Server) setupViews() error {
+	s.viewsEngine.AddFunc("renderPost", func(post string) string {
+		content, err := blog.RenderPost(post)
+		if err != nil {
+			return ""
+		}
+
+		return string(content)
+	})
+	s.viewsEngine.AddFunc("unescape", func(s string) template.HTML {
+		return template.HTML(s)
+	})
+
+	translationService, err := container.Resolve[*i18n.TranslationService](s.Wiring)
 	if err != nil {
 		return err
 	}
+	s.viewsEngine.AddFunc("translate", func(lang, key string, fallback ...string) string {
+		log.Println("translating", lang, key)
+		if len(fallback) > 0 {
+			return translationService.TranslateOr(lang, key, fallback[0])
+		}
+		return translationService.Translate(lang, key)
+	})
+	s.viewsEngine.AddFunc("namedUrl", func(name string) string {
+		return ""
+	})
 
 	return nil
 }
