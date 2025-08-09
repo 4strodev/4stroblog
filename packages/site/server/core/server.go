@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"runtime/debug"
+	"strings"
 
 	"github.com/4strodev/4stroblog/site/features/blog"
 	"github.com/4strodev/4stroblog/site/shared/i18n"
@@ -15,6 +16,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/static"
 	"github.com/gofiber/template/html/v2"
+	"golang.org/x/text/language"
 )
 
 type Server struct {
@@ -85,15 +87,29 @@ func (s *Server) Init() error {
 
 			debug.PrintStack()
 			strContent := fmt.Sprint(r)
-			s.logger.Error("catched error", "stack", strContent)
 
 			err := ctx.Status(http.StatusInternalServerError).SendString(strContent)
 			if err != nil {
-				log.Println(err)
+				s.logger.Error("error caught", "stack", strContent)
 			}
 		}()
 		return ctx.Next()
 	})
+
+	langMatcher := language.NewMatcher([]language.Tag{
+		language.English,
+		language.Spanish,
+	})
+	s.fiber.Use(func(ctx fiber.Ctx) error {
+		lang := ctx.Cookies("lang")
+		acceptLanguage := ctx.Get("Accept-Language")
+		langTag, _ := language.MatchStrings(langMatcher, lang, acceptLanguage)
+		language, _ := langTag.Base()
+		ctx.Context().SetUserValue("lang", language)
+
+		return ctx.Next()
+	})
+
 	s.fiber.Get("/assets/*", static.New("./assets"))
 	s.fiber.Get("/uploads/*", static.New("./uploads"))
 

@@ -12,6 +12,7 @@ import (
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
 	"github.com/tidwall/gjson"
+	"golang.org/x/text/language"
 )
 
 type TranslationService struct {
