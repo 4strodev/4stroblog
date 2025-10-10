@@ -4,11 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"log"
 	"log/slog"
 	"net/http"
 	"runtime/debug"
-	"strings"
 
 	"github.com/4strodev/4stroblog/site/features/blog"
 	"github.com/4strodev/4stroblog/site/shared/i18n"
@@ -138,7 +136,6 @@ func (s *Server) setupViews() error {
 		return err
 	}
 	s.viewsEngine.AddFunc("translate", func(lang, key string, fallback ...string) string {
-		log.Println("translating", lang, key)
 		if len(fallback) > 0 {
 			return translationService.TranslateOr(lang, key, fallback[0])
 		}

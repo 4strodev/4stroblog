@@ -12,6 +12,8 @@ tasks:
     cmds:
       - task -d ./packages/theme install
       - task -d ./packages/site install
+      - task -d ./packages/go-markdown-emoji install
+      - task -d ./packages/wiring install
 
   build:
     desc: "Build application"
@@ -50,4 +52,4 @@ tasks:
     desc: "Start base container"
     dir: './infrastructure'
     cmds:
-      - docker compose up minio
+     - docker compose up minio -d

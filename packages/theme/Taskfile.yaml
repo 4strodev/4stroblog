@@ -3,5 +3,4 @@ version: '3'
 tasks:
   install:
     desc: "Install theme dependencies"
-    silent: true
     cmd: pnpm install

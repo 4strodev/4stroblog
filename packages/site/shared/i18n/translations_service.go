@@ -3,7 +3,6 @@ package i18n
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,7 +11,6 @@ import (
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
 	"github.com/tidwall/gjson"
-	"golang.org/x/text/language"
 )
 
 type TranslationService struct {
@@ -20,7 +18,6 @@ type TranslationService struct {
 }
 
 func NewTranslationsService(folder string) (*TranslationService, error) {
-	log.Println("creating translation service")
 	dirEntries, err := os.ReadDir(folder)
 	if err != nil {
 		return nil, err
