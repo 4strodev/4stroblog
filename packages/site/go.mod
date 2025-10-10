@@ -17,7 +17,9 @@ require (
 	github.com/knadh/koanf/v2 v2.1.2
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/minio/minio-go/v7 v7.0.84
+	github.com/tidwall/gjson v1.18.0
 	golang.org/x/crypto v0.32.0
+	golang.org/x/text v0.28.0
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 )
@@ -47,7 +49,6 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/rs/xid v1.6.0 // indirect
-	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
@@ -55,5 +56,4 @@ require (
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.28.0 // indirect
 )

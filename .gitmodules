@@ -3,4 +3,4 @@
 	url = git@github.com:4strodev/wiring
 [submodule "packages/go-markdown-emoji"]
 	path = packages/go-markdown-emoji
-	url = git@github.com:4strodev/wiring
+	url = git@github.com:4strodev/go-markdown-emoji

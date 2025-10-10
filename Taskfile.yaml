@@ -7,6 +7,12 @@ tasks:
       - start:dev
       - theme:build:watch
 
+  install:
+    desc: "Install dependencies across packages"
+    cmds:
+      - task -d ./packages/theme install
+      - task -d ./packages/site install
+
   build:
     desc: "Build application"
     dir: './packages/site'
