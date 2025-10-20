@@ -16,3 +16,7 @@ type SessionService struct {
 	DB     *gorm.DB
 	Config config.Config
 }
+
+func (s *SessionService) CheckCredentials(user string, password string)  {
+	
+}
