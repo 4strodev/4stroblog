@@ -23,7 +23,7 @@ func (r *GormSessionRepository) FindById(ctx context.Context, id uuid.UUID) (dom
 	err := r.DB.WithContext(ctx).First(&sessionModel, id).Error
 	if err != nil {
 		errorCode := domainerrors.DATABASE
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			errorCode = domainerrors.ENTITY_NOT_FOUND
 		}
 		return session, domainerrors.WrapError(errorCode, err)
@@ -41,7 +41,7 @@ func (r *GormSessionRepository) FindByProfileId(ctx context.Context, profileId u
 	err := r.DB.WithContext(ctx).First(&sessionModel, "profile_id = ?", profileId).Error
 	if err != nil {
 		errorCode := domainerrors.DATABASE
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			errorCode = domainerrors.ENTITY_NOT_FOUND
 		}
 		return session, domainerrors.WrapError(errorCode, err)
@@ -59,7 +59,7 @@ func (r *GormSessionRepository) FindByEmail(ctx context.Context, email string) (
 	err := r.DB.WithContext(ctx).First(&sessionModel, "email = ?", email).Error
 	if err != nil {
 		errorCode := domainerrors.DATABASE
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			errorCode = domainerrors.ENTITY_NOT_FOUND
 		}
 		return session, domainerrors.WrapError(errorCode, err)

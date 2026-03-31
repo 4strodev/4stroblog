@@ -1,10 +1,10 @@
 package blog
 
 import (
+	emoji "github.com/4strodev/go-markdown-emoji"
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
-	emoji "github.com/4strodev/go-markdown-emoji"
 	"github.com/microcosm-cc/bluemonday"
 )
 

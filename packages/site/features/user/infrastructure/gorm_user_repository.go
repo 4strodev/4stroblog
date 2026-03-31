@@ -36,7 +36,7 @@ func (r *GormUserRepository) FindByEmail(ctx context.Context, email string) (dom
 
 	if err != nil {
 		errorCode := domainerrors.DATABASE
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			errorCode = domainerrors.ENTITY_NOT_FOUND
 		}
 		return user, domainerrors.WrapError(errorCode, err)

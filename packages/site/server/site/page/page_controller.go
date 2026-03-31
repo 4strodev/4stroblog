@@ -14,7 +14,7 @@ type SitePageController struct {
 }
 
 func (c *SitePageController) Init(cont *container.Container) error {
-	router,err := container.Resolve[fiber.Router](cont)
+	router, err := container.Resolve[fiber.Router](cont)
 	if err != nil {
 		return err
 	}

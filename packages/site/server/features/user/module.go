@@ -1,9 +1,9 @@
 package user
 
 import (
+	"github.com/4strodev/4stroblog/site/features/user/application"
 	"github.com/4strodev/4stroblog/site/features/user/domain"
 	"github.com/4strodev/4stroblog/site/features/user/infrastructure"
-	"github.com/4strodev/4stroblog/site/features/user/application"
 	"github.com/4strodev/4stroblog/site/server/core"
 	"gorm.io/gorm"
 )

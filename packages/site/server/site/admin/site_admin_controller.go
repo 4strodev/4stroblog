@@ -11,7 +11,7 @@ import (
 
 type SiteAdminController struct {
 	JwtVerifier *domain.JwtVerify
-	Logger    *slog.Logger
+	Logger      *slog.Logger
 }
 
 type SessionHeaders struct {

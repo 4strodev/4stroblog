@@ -13,10 +13,11 @@ type User struct {
 	ID   uuid.UUID
 	Name string
 	// Login it's the identifier that will be used to login
-	Login    string
-	Password string
-	Verified bool
-	Emails   []string
+	Login        string
+	PrimaryEmail string
+	Password     string
+	Verified     bool
+	Emails       []string
 }
 
 func NewUser(name string, login string, password string) (User, error) {

@@ -6,7 +6,7 @@ import (
 )
 
 type DomainError struct {
-	code errorCode
+	code  errorCode
 	stack []byte
 	error
 }
@@ -35,8 +35,6 @@ func Errorf(code errorCode, message string, arguments ...any) *DomainError {
 func (err *DomainError) Error() string {
 	return err.error.Error()
 }
-
-
 
 func Is(err error, code errorCode) (*DomainError, bool) {
 	var domainError *DomainError = &DomainError{}
