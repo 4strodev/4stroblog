@@ -8,7 +8,7 @@ import (
 
 var SiteSessionModule = core.Module{
 	Singletons: []any{
-		application.NewSessionService,
+		application.NewSessionAppService,
 		domain.NewJwtVerify,
 	},
 	Controllers: []core.Controller{

@@ -28,13 +28,13 @@ func (s *RegisterService) Register(ctx context.Context, req RegisterReqDTO) (res
 		return res, err
 	}
 	select {
+	// Check if context is done before persisting user
 	case <-ctx.Done():
 		return res, domainerrors.WrapError(domainerrors.CONTEXT_FINISHED, ctx.Err())
 	default:
 		// Proceed
 	}
 
-	// Check if context is done before persisting user
 	err = s.UserService.CreateUser(ctx, user)
 	res = UserRegisterResDTO{
 		UserID: user.ID,

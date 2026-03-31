@@ -25,7 +25,7 @@ func (c *SessionController) Init(cont *container.Container) error {
 
 	group := router.Group("/session")
 	group.Post("/login", func(ctx fiber.Ctx) error {
-		loginService := application.SessionService{
+		loginService := application.SessionAppService{
 			DB:     c.Db,
 			Config: config,
 		}

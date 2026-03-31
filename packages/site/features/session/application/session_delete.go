@@ -9,7 +9,7 @@ type SessionDeleteReq struct {
 	ID uuid.UUID `json:"id"`
 }
 
-func (s *SessionService) Delete(req SessionDeleteReq) error {
+func (s *SessionAppService) Delete(req SessionDeleteReq) error {
 	var session models.Session
 	return s.DB.Delete(&session, req.ID).Error
 }

@@ -6,7 +6,7 @@ import (
 
 	"github.com/4strodev/4stroblog/site/features/user/domain"
 	"github.com/4strodev/4stroblog/site/shared/db/models"
-	domainerrors "github.com/4strodev/4stroblog/site/shared/domain/domainerrors"
+	"github.com/4strodev/4stroblog/site/shared/domain/domainerrors"
 	"gorm.io/gorm"
 )
 

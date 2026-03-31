@@ -12,24 +12,23 @@ import (
 type User struct {
 	ID   uuid.UUID
 	Name string
-	// PrimaryEmail is the email used for login
-	// is the human readable identifier for this profile
-	PrimaryEmail string
-	Password     string
-	Verified     bool
-	Emails       []string
+	// Login it's the identifier that will be used to login
+	Login    string
+	Password string
+	Verified bool
+	Emails   []string
 }
 
-func NewUser(name string, primaryEmail string, password string) (User, error) {
+func NewUser(name string, login string, password string) (User, error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		return User{}, domainerrors.WrapError(domainerrors.RUNTIME, err)
 	}
 	return User{
-		ID:           uuid.Must(uuid.NewV7()),
-		Name:         name,
-		PrimaryEmail: primaryEmail,
-		Password:     string(passwordHash),
+		ID:       uuid.Must(uuid.NewV7()),
+		Name:     name,
+		Login:    login,
+		Password: string(passwordHash),
 	}, nil
 }
 

@@ -10,7 +10,7 @@ import (
 )
 
 type SiteSessionController struct {
-	SessionService *application.SessionService
+	SessionService *application.SessionAppService
 }
 
 func (c *SiteSessionController) Init(cont *container.Container) error {

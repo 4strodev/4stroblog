@@ -9,10 +9,10 @@ import (
 
 type Session struct {
 	gorm.Model
-	ID             uuid.UUID `gorm:"primaryKey"`
-	UserID         uuid.UUID
+	ID             uuid.UUID `gorm:"primaryKey;column:id"`
+	UserID         uuid.UUID `gorm:"column:user_id"`
 	User           User
-	ProfileID      uuid.UUID
+	ProfileID      uuid.UUID `gorm:"column:profile_id"`
 	Profile        Profile
-	ExpirationTime time.Time
+	ExpirationTime time.Time `gorm:"column:expiration_time"`
 }

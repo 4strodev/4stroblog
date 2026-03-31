@@ -1,22 +1,20 @@
 package application
 
 import (
+	"github.com/4strodev/4stroblog/site/features/session/domain"
+	userDomain "github.com/4strodev/4stroblog/site/features/user/domain"
 	"github.com/4strodev/4stroblog/site/shared/config"
-	"gorm.io/gorm"
 )
 
-func NewSessionService(db *gorm.DB, cfg config.Config) *SessionService {
-	return &SessionService{
-		DB:     db,
-		Config: cfg,
+func NewSessionAppService(sessionService domain.SessionService, cfg config.Config) *SessionAppService {
+	return &SessionAppService{
+		SessionService: sessionService,
+		Config:         cfg,
 	}
 }
 
-type SessionService struct {
-	DB     *gorm.DB
-	Config config.Config
-}
-
-func (s *SessionService) CheckCredentials(user string, password string)  {
-	
+type SessionAppService struct {
+	SessionService domain.SessionService
+	ProfileService userDomain
+	Config         config.Config
 }
