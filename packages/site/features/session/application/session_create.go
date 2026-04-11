@@ -2,13 +2,12 @@ package application
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/4strodev/4stroblog/site/features/session/application/dto"
 	"github.com/4strodev/4stroblog/site/features/session/domain"
-	"github.com/4strodev/4stroblog/site/shared/db/models"
+	"github.com/4strodev/4stroblog/site/shared/domain/domainerrors"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 type SessionCreateReq struct {
@@ -17,29 +16,40 @@ type SessionCreateReq struct {
 	Password string    `json:"password"`
 }
 
-func (s *SessionAppService) Create(ctx context.Context, req SessionCreateReq) (err error) {
-	email, password := req.User, req.Password
-	var session domain.Session
-	var profile models.Profile
+func (s *SessionAppService) Create(ctx context.Context, req SessionCreateReq) (dto.SessionDto, error) {
+	var sessionDto dto.SessionDto
 
-	// Getting user profile
-	session, err = s.SessionService.FindByEmail(ctx, email)
+	// Look up the profile by email to get the associated user ID.
+	profile, err := s.ProfileRepository.FindByEmail(ctx, req.User)
 	if err != nil {
-		return
+		return sessionDto, err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(profile.Password), []byte(password))
+	// Fetch the user record to retrieve the password hash.
+	user, err := s.UserRepository.FindByID(ctx, profile.UserID)
 	if err != nil {
-		err = fmt.Errorf("password does not match: %w", err)
-		return
+		return sessionDto, err
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		return sessionDto, domainerrors.WrapError(domainerrors.DATA_CONFLICT, err)
 	}
 
 	sessionBuilder := domain.SessionBuilder{}
-	session, err = sessionBuilder.Build(profile)
+	session, err := sessionBuilder.Build(profile)
 	if err != nil {
-		return
+		return sessionDto, err
 	}
 
-	// Saving session to database
-	return s.SessionService.Save(ctx, session)
+	if err := s.SessionService.Save(ctx, session); err != nil {
+		return sessionDto, err
+	}
+
+	sessionDto = dto.SessionDto{
+		ID:             session.ID,
+		UserID:         session.UserID,
+		ExpirationTime: session.ExpriationTime,
+		ProfileID:      session.ProfileID,
+	}
+	return sessionDto, nil
 }

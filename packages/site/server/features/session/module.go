@@ -1,7 +1,8 @@
 package session
 
 import (
-	"github.com/4strodev/4stroblog/site/features/session/domain"
+	sessionapp "github.com/4strodev/4stroblog/site/features/session/application"
+	sessiondomain "github.com/4strodev/4stroblog/site/features/session/domain"
 	"github.com/4strodev/4stroblog/site/features/session/infrastructure"
 	"github.com/4strodev/4stroblog/site/server/core"
 	"gorm.io/gorm"
@@ -9,10 +10,14 @@ import (
 
 var SessionFeatureModule = core.Module{
 	Singletons: []any{
-		func(db *gorm.DB) domain.SessionRepository {
-			return &infrastructure.GormSessionRepository{
-				DB: db,
-			}
+		func(db *gorm.DB) sessiondomain.SessionRepository {
+			return &infrastructure.GormSessionRepository{DB: db}
 		},
+		func(repo sessiondomain.SessionRepository) sessiondomain.SessionService {
+			return sessiondomain.SessionService{Repository: repo}
+		},
+	},
+	ExportSingletons: []any{
+		sessionapp.NewSessionAppService,
 	},
 }

@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	"github.com/4strodev/4stroblog/site/shared/db/models"
+	userdomain "github.com/4strodev/4stroblog/site/features/user/domain"
 	"github.com/google/uuid"
 )
 
@@ -23,16 +23,14 @@ func (b *SessionBuilder) SetExpirationTime(time time.Time) *SessionBuilder {
 	return b
 }
 
-// Build returns a new session. At least profile must be set before calling
-// build. If no expirationTime is set the deafult one is 5 hours
-func (b *SessionBuilder) Build(profile models.Profile) (Session, error) {
+// Build returns a new session for the given profile.
+// If no expirationTime is set, the default is 5 hours from now.
+func (b *SessionBuilder) Build(profile userdomain.Profile) (Session, error) {
 	var session Session
 
 	if b.expirationTime.IsZero() {
 		b.ExpirateAfter(time.Hour * 5)
 	}
-
-	// Create refresh token
 
 	session = Session{
 		ID:             uuid.Must(uuid.NewV7()),

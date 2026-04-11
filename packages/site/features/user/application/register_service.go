@@ -9,7 +9,8 @@ import (
 )
 
 type RegisterService struct {
-	UserService *domain.UserService
+	UserRepository domain.UserRepository
+	ProfileService *domain.ProfileService
 }
 
 type RegisterReqDTO struct {
@@ -23,21 +24,26 @@ type UserRegisterResDTO struct {
 }
 
 func (s *RegisterService) Register(ctx context.Context, req RegisterReqDTO) (res UserRegisterResDTO, err error) {
-	user, err := domain.NewUser(req.Name, req.Email, req.Password)
-	if err != nil {
-		return res, err
-	}
 	select {
-	// Check if context is done before persisting user
 	case <-ctx.Done():
 		return res, domainerrors.WrapError(domainerrors.CONTEXT_FINISHED, ctx.Err())
 	default:
-		// Proceed
 	}
 
-	err = s.UserService.CreateUser(ctx, user)
-	res = UserRegisterResDTO{
-		UserID: user.ID,
+	user, err := domain.NewUser(req.Password)
+	if err != nil {
+		return res, err
 	}
-	return
+
+	if err = s.UserRepository.Save(ctx, user); err != nil {
+		return res, err
+	}
+
+	_, err = s.ProfileService.CreateProfile(ctx, user.ID, req.Name, req.Email)
+	if err != nil {
+		return res, err
+	}
+
+	res = UserRegisterResDTO{UserID: user.ID}
+	return res, nil
 }

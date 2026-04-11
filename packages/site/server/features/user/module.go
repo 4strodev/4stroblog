@@ -11,21 +11,21 @@ import (
 var UserFeatureModule = core.Module{
 	Singletons: []any{
 		func(db *gorm.DB) domain.UserRepository {
-			return &infrastructure.GormUserRepository{
-				DB: db,
-			}
+			return &infrastructure.GormUserRepository{DB: db}
 		},
-		func(repository domain.UserRepository) *domain.UserService {
-			return &domain.UserService{
-				Repository: repository,
-			}
+		func(profileRepo domain.ProfileRepository) *domain.ProfileService {
+			return &domain.ProfileService{ProfileRepository: profileRepo}
 		},
 	},
 	ExportSingletons: []any{
-		func(service *domain.UserService) *application.RegisterService {
+		func(userRepo domain.UserRepository, profileService *domain.ProfileService) *application.RegisterService {
 			return &application.RegisterService{
-				UserService: service,
+				UserRepository: userRepo,
+				ProfileService: profileService,
 			}
+		},
+		func(db *gorm.DB) domain.ProfileRepository {
+			return &infrastructure.GormProfileRepository{DB: db}
 		},
 	},
 }

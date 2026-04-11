@@ -1,7 +1,8 @@
 package application
 
 import (
-	"github.com/4strodev/4stroblog/site/shared/db/models"
+	"context"
+
 	"github.com/google/uuid"
 )
 
@@ -9,7 +10,6 @@ type SessionDeleteReq struct {
 	ID uuid.UUID `json:"id"`
 }
 
-func (s *SessionAppService) Delete(req SessionDeleteReq) error {
-	var session models.Session
-	return s.DB.Delete(&session, req.ID).Error
+func (s *SessionAppService) Delete(ctx context.Context, req SessionDeleteReq) error {
+	return s.SessionService.Repository.Delete(ctx, req.ID)
 }

@@ -2,40 +2,33 @@ package session
 
 import (
 	"github.com/4strodev/4stroblog/site/features/session/application"
-	"github.com/4strodev/4stroblog/site/shared/config"
 	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
-	"gorm.io/gorm"
 )
 
 type SessionController struct {
-	Db *gorm.DB
+	SessionService *application.SessionAppService
 }
 
 func (c *SessionController) Init(cont *container.Container) error {
-	config, err := config.GetConfig()
+	router, err := container.Resolve[fiber.Router](cont)
 	if err != nil {
 		return err
 	}
 
-	router, err := container.Resolve[fiber.Router](cont)
+	err = cont.Fill(c)
 	if err != nil {
 		return err
 	}
 
 	group := router.Group("/session")
 	group.Post("/login", func(ctx fiber.Ctx) error {
-		loginService := application.SessionAppService{
-			DB:     c.Db,
-			Config: config,
-		}
 		body := application.SessionCreateReq{}
-		err := ctx.Bind().Body(&body)
-		if err != nil {
+		if err := ctx.Bind().Body(&body); err != nil {
 			return err
 		}
 
-		response, err := loginService.Create(ctx.Context(), body)
+		response, err := c.SessionService.Create(ctx.Context(), body)
 		if err != nil {
 			return err
 		}
