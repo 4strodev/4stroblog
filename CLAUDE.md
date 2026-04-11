@@ -41,8 +41,3 @@ infrastructure/
 - **Prefer clear over clever.** Code should be readable by someone with zero context.
 - Flat, explicit code beats indirection. Name things for what they do.
 - No speculative abstractions. Solve the problem in front of you.
-
-## Agents to consult
-
-- **Architecture questions** → `@architecture-oracle` agent. Use it before making structural changes or adding new features.
-- **After changing behavior** → `@docs-sync-writer` agent. Use it to keep documentation in sync with what the code actually does.
