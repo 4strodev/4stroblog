@@ -18,16 +18,18 @@ import (
 )
 
 type Server struct {
-	Wiring      *container.Container
-	fiber       *fiber.App
-	middlewares []fiber.Handler
-	modules     []*Module
-	logger      *slog.Logger
-	viewsEngine *html.Engine
+	Container        *container.Container
+	fiber            *fiber.App
+	middlewares      []fiber.Handler
+	Modules          []*Module
+	logger           *slog.Logger
+	viewsEngine      *html.Engine
+	GlobalSingletons []any
+	GlobalTransients []any
 }
 
 func (s *Server) AddModule(module Module) {
-	s.modules = append(s.modules, &module)
+	s.Modules = append(s.Modules, &module)
 }
 
 func (s *Server) AddMiddleware(handler fiber.Handler) {
@@ -36,27 +38,36 @@ func (s *Server) AddMiddleware(handler fiber.Handler) {
 
 // Init initialize server dependencies and modules to be ready to start listening requests
 func (s *Server) Init() error {
-	if s.Wiring == nil {
-		s.Wiring = container.New()
+	if s.Container == nil {
+		s.Container = container.New()
 	}
 	s.viewsEngine = html.New("./views", ".html")
 
 	// setup dependencies
-	err := s.Wiring.Singleton(func() fiber.Router {
+	err := s.Container.Singleton(func() fiber.Router {
 		return s.fiber
 	})
 	if err != nil {
 		return err
 	}
-	for _, module := range s.modules {
-		err := module.initDependencies(s.Wiring)
+
+	if s.GlobalSingletons != nil {
+		s.Container.Singleton(s.GlobalSingletons...)
+	}
+
+	if s.GlobalTransients != nil {
+		s.Container.Dependencies(s.GlobalTransients...)
+	}
+
+	for _, module := range s.Modules {
+		err := module.initDependencies(s.Container.Derived())
 		if err != nil {
 			return err
 		}
 	}
 
 	// setup logger
-	s.logger, err = container.Resolve[*slog.Logger](s.Wiring)
+	s.logger, err = container.Resolve[*slog.Logger](s.Container)
 	if err != nil {
 		return err
 	}
@@ -131,7 +142,7 @@ func (s *Server) setupViews() error {
 		return template.HTML(s)
 	})
 
-	translationService, err := container.Resolve[*i18n.TranslationService](s.Wiring)
+	translationService, err := container.Resolve[*i18n.TranslationService](s.Container)
 	if err != nil {
 		return err
 	}
@@ -153,7 +164,8 @@ func (s *Server) Start(port int) error {
 		return errors.New("server not initialized")
 	}
 
-	for _, module := range s.modules {
+	for _, module := range s.Modules {
+		s.logger.Info("initializing controllers", "module", module.Name)
 		err := module.initControllers()
 		if err != nil {
 			return err

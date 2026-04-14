@@ -6,7 +6,7 @@ toolchain go1.24.4
 
 require (
 	github.com/4strodev/go-markdown-emoji v1.0.4
-	github.com/4strodev/wiring_graphs v1.0.0-beta.0.20250804213220-65c5f1df4bd1
+	github.com/4strodev/wiring_graphs v1.0.0-beta3
 	github.com/cristalhq/jwt/v5 v5.4.0
 	github.com/gofiber/fiber/v3 v3.0.0-beta.3
 	github.com/gofiber/template/html/v2 v2.1.2

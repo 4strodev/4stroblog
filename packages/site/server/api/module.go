@@ -9,4 +9,5 @@ var ApiModule = core.Module{
 	Imports: []*core.Module{
 		&user.UserApiModule,
 	},
+	Name: "ApiModule",
 }

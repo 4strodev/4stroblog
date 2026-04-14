@@ -6,4 +6,5 @@ var SiteBlogModule = core.Module{
 	Controllers: []core.Controller{
 		&SiteBlogController{},
 	},
+	Name: "SiteBlogModule",
 }

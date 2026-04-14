@@ -16,8 +16,7 @@ var SessionFeatureModule = core.Module{
 		func(repo sessiondomain.SessionRepository) sessiondomain.SessionService {
 			return sessiondomain.SessionService{Repository: repo}
 		},
-	},
-	ExportSingletons: []any{
 		sessionapp.NewSessionAppService,
 	},
+	Name: "SessionFeatureModule",
 }

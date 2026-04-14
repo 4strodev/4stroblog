@@ -10,4 +10,5 @@ var UserApiModule = core.Module{
 	Imports: []*core.Module{
 		&user.UserFeatureModule,
 	},
+	Name: "UserApiModule",
 }

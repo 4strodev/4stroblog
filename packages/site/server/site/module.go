@@ -20,4 +20,5 @@ var SiteModule = core.Module{
 		&blog.SiteBlogModule,
 		&admin.SiteAdminModule,
 	},
+	Name: "SiteModule",
 }

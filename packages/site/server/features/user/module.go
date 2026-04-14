@@ -16,8 +16,6 @@ var UserFeatureModule = core.Module{
 		func(profileRepo domain.ProfileRepository) *domain.ProfileService {
 			return &domain.ProfileService{ProfileRepository: profileRepo}
 		},
-	},
-	ExportSingletons: []any{
 		func(userRepo domain.UserRepository, profileService *domain.ProfileService) *application.RegisterService {
 			return &application.RegisterService{
 				UserRepository: userRepo,
@@ -28,4 +26,5 @@ var UserFeatureModule = core.Module{
 			return &infrastructure.GormProfileRepository{DB: db}
 		},
 	},
+	Name: "UserFeatureModule",
 }

@@ -19,4 +19,5 @@ var SharedModule = core.Module{
 			return i18n.NewTranslationsService(conf.I18n.Folder)
 		},
 	},
+	Name: "SharedModule",
 }
