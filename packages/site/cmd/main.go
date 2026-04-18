@@ -19,6 +19,7 @@ import (
 )
 
 func main() {
+	fmt.Println("main started")
 	port, err := strconv.ParseInt(os.Getenv("PORT"), 0, 32)
 	if err != nil {
 		panic(fmt.Errorf("cannot parse PORT env: %w", err))
@@ -43,16 +44,19 @@ func main() {
 		},
 	}
 
+	log.Println("Intitializing server")
 	err = s.Init()
 	if err != nil {
 		log.Panic(err)
 	}
+	log.Println("Initialized server")
 
 	logger, err := container.Resolve[*slog.Logger](cont)
 	if err != nil {
 		log.Fatal("no logger resolved: ", err)
 	}
 
+	fmt.Println("Server started")
 	err = s.Start(int(port))
 	if err != nil {
 		logger.Error(err.Error())

@@ -10,10 +10,8 @@ tasks:
   install:
     desc: "Install dependencies across packages"
     cmds:
-      - task -d ./packages/theme install
-      - task -d ./packages/site install
-      - task -d ./packages/go-markdown-emoji install
-      - task -d ./packages/wiring install
+      - go-task -d ./packages/theme install
+      - go-task -d ./packages/site install
 
   build:
     desc: "Build application"
