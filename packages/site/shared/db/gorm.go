@@ -11,6 +11,7 @@ var appModels = []any{
 	&models.User{},
 	&models.Session{},
 	&models.Profile{},
+	&models.SiteMeta{},
 }
 var dbInstance *gorm.DB
 

@@ -9,6 +9,9 @@ import (
 )
 
 type Config struct {
+	Site struct {
+		AdminEmail string `koanf:"admin_email" validate:"required"`
+	} `koanf:"site"`
 	Environment struct {
 		// GodMode allows you to access to all restricted
 		// sections of the site. Use it to test integrations and
@@ -48,7 +51,6 @@ func GetConfig() (Config, error) {
 		}
 		loaded = true
 	}
-
 	return config, nil
 }
 
