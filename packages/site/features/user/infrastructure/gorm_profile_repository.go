@@ -37,7 +37,7 @@ func (r *GormProfileRepository) FindByEmail(ctx context.Context, email string) (
 	profile := domain.Profile{}
 
 	err := r.DB.WithContext(ctx).
-		Where("email = ? AND deleted_at IS NULL", email).
+		Where("email = ?", email).
 		First(&profileModel).Error
 	if err != nil {
 		errorCode := domainerrors.DATABASE
