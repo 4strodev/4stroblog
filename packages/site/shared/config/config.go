@@ -8,35 +8,47 @@ import (
 	"github.com/knadh/koanf/v2"
 )
 
+type SiteConfig struct {
+	AdminEmail string `koanf:"admin_email" validate:"required"`
+}
+
+type EnvironmentConfig struct {
+	// GodMode allows you to access to all restricted
+	// sections of the site. Use it to test integrations and
+	// features hidden to public users
+	GodMode bool `koanf:"god_mode"`
+}
+
+type AuthConfig struct {
+	JWK struct {
+		Secret string `koanf:"secret"`
+	} `koanf:"jwk"`
+}
+
+type DbConfig struct {
+	Sqlite struct {
+		Path string `koanf:"path"`
+	} `koanf:"sqlite"`
+}
+
+type StorageConfig struct {
+	S3 struct {
+		Url    string `koanf:"url"`
+		Bucket string `koanf:"bucket"`
+	} `koanf:"s3"`
+}
+
+type I18nConfig struct {
+	Folder string `koanf:"folder"`
+}
+
 type Config struct {
-	Site struct {
-		AdminEmail string `koanf:"admin_email" validate:"required"`
-	} `koanf:"site"`
-	Environment struct {
-		// GodMode allows you to access to all restricted
-		// sections of the site. Use it to test integrations and
-		// features hidden to public users
-		GodMode bool `koanf:"god_mode"`
-	} `koanf:"environment"`
-	Auth struct {
-		JWK struct {
-			Secret string `koanf:"secret"`
-		} `koanf:"jwk"`
-	} `koanf:"auth"`
-	Db struct {
-		Sqlite struct {
-			Path string `koanf:"path"`
-		} `koanf:"sqlite"`
-	} `koanf:"db"`
-	Storage struct {
-		S3 struct {
-			Url    string `koanf:"url"`
-			Bucket string `koanf:"bucket"`
-		} `koanf:"s3"`
-	} `koanf:"storage"`
-	I18n struct {
-		Folder string `koanf:"folder"`
-	} `koanf:"i18n"`
+	Site        SiteConfig        `koanf:"site"`
+	Environment EnvironmentConfig `koanf:"environment"`
+	Auth        AuthConfig        `koanf:"auth"`
+	Db          DbConfig          `koanf:"db"`
+	Storage     StorageConfig     `koanf:"storage"`
+	I18n        I18nConfig        `koanf:"i18n"`
 }
 
 var config Config
