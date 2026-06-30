@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/4strodev/4stroblog/site/server/api"
 	"github.com/4strodev/4stroblog/site/server/core"
 	"github.com/4strodev/4stroblog/site/server/site"
 	"github.com/4strodev/4stroblog/site/shared/config"
@@ -30,7 +29,6 @@ func main() {
 	s := core.Server{
 		Container: cont,
 		Modules: []*core.Module{
-			&api.ApiModule,
 			&site.SiteModule,
 		},
 		GlobalSingletons: []any{

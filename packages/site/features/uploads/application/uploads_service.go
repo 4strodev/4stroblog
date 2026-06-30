@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"time"
 
@@ -17,14 +16,14 @@ import (
 
 func NewUploadsService(db *gorm.DB, s3 *minio.Client) *UploadsService {
 	return &UploadsService{
-		Db: db,
-		S3: s3,
+		Db:            db,
+		ObjectStorage: s3,
 	}
 }
 
 type UploadsService struct {
-	Db *gorm.DB
-	S3 *minio.Client
+	Db            *gorm.DB
+	ObjectStorage *minio.Client
 }
 
 // Saves a file directly to s3 returning an error if something happens. It does not do any modification
@@ -45,13 +44,18 @@ func (s *UploadsService) SaveFile(ctx context.Context, uploadFile domain.Upload)
 		return err
 	}
 
-	fileName := fmt.Sprintf("%s_%s", uploadFile.Time, uploadFile.Name)
-	uploadInfo, err := s.S3.PutObject(
-		ctx, s3.UPLOADS_BUCKET,
-		fileName,
+	uploadInfo, err := s.ObjectStorage.PutObject(
+		ctx,
+		s3.UPLOADS_BUCKET,
+		uploadFile.ID.String(),
 		uploadFile.Content,
 		int64(buffer.Len()),
-		minio.PutObjectOptions{Checksum: minio.ChecksumSHA256})
+		minio.PutObjectOptions{Checksum: minio.ChecksumSHA256,
+			UserMetadata: map[string]string{
+				"name": uploadFile.Name,
+				"time": uploadFile.Time.UTC().String(),
+			}},
+	)
 	if err != nil {
 		return err
 	}
