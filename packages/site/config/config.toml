@@ -15,4 +15,5 @@ bucket = "uploads"
 god_mode = true
 
 [i18n]
+default = "en"
 folder = "./config/i18n"

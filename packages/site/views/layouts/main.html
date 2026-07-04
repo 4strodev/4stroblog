@@ -3,7 +3,7 @@
 {{ template "components/head" . }}
 
 <body class="h-screen flex flex-col">
-    {{ template "components/header" }}
+    {{ template "components/header" . }}
 
     <main class="flex-grow p-4 justify-center w-full flex">
         <div class="w-full md:w-10/12 lg:w-8/12 max-w-3xl">
@@ -11,7 +11,7 @@
         </div>
     </main>
 
-    {{ template "components/footer" }}
+    {{ template "components/footer" . }}
     <script>
         // Load icons
         feather.replace();

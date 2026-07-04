@@ -79,7 +79,8 @@ func (s *Server) Init() error {
 	}
 
 	s.fiber = fiber.New(fiber.Config{
-		Views: s.viewsEngine,
+		Views:             s.viewsEngine,
+		PassLocalsToViews: true,
 		ErrorHandler: func(ctx fiber.Ctx, err error) error {
 			s.logger.Error(err.Error())
 			return ctx.Status(http.StatusInternalServerError).SendString(err.Error())
@@ -106,15 +107,18 @@ func (s *Server) Init() error {
 	})
 
 	langMatcher := language.NewMatcher([]language.Tag{
-		language.English,
 		language.Spanish,
+		language.English,
 	})
 	s.fiber.Use(func(ctx fiber.Ctx) error {
 		lang := ctx.Cookies("lang")
 		acceptLanguage := ctx.Get("Accept-Language")
 		langTag, _ := language.MatchStrings(langMatcher, lang, acceptLanguage)
-		language, _ := langTag.Base()
-		ctx.Context().SetUserValue("lang", language)
+		base, _ := langTag.Base()
+
+		ctx.ViewBind(fiber.Map{
+			"Lang": base.String(),
+		})
 
 		return ctx.Next()
 	})

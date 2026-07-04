@@ -1,0 +1,8 @@
+[sections]
+home = "Home"
+about = "About"
+posts = "Posts"
+
+[actions]
+new_post = "New post"
+login = "Login"

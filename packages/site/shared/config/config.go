@@ -39,7 +39,8 @@ type StorageConfig struct {
 }
 
 type I18nConfig struct {
-	Folder string `koanf:"folder"`
+	Folder  string `koanf:"folder"`
+	Default string `koanf:"default"`
 }
 
 type Config struct {

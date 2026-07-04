@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/4strodev/4stroblog/site/shared/config"
 	"github.com/knadh/koanf/parsers/toml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
@@ -15,6 +16,7 @@ import (
 
 type TranslationService struct {
 	translationFiles map[string][]byte
+	config *config.Config
 }
 
 func NewTranslationsService(folder string) (*TranslationService, error) {
@@ -62,14 +64,14 @@ func loadFile(path string) ([]byte, error) {
 
 func (t *TranslationService) Translate(lang, key string) string {
 	if _, ok := t.translationFiles[lang]; !ok {
-		return ""
+		lang = t.config.I18n.Default
 	}
 	return gjson.Get(string(t.translationFiles[lang]), key).String()
 }
 
 func (t *TranslationService) TranslateOr(lang, key string, fallback string) string {
 	if _, ok := t.translationFiles[lang]; !ok {
-		return ""
+		lang = t.config.I18n.Default
 	}
 	result := gjson.Get(string(t.translationFiles[lang]), key)
 	if !result.Exists() {
