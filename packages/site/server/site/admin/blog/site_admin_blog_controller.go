@@ -1,7 +1,7 @@
 package blog
 
 import (
-	"github.com/4strodev/4stroblog/site/features/blog"
+	"github.com/4strodev/4stroblog/site/features/post"
 	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 )
@@ -28,7 +28,7 @@ func (c *SiteAdminBlogController) Init(cont *container.Container) error {
 
 		md := body.Content
 
-		html := blog.RenderMarkdown([]byte(md))
+		html := post.RenderMarkdown([]byte(md))
 
 		return ctx.SendString(string(html))
 	})

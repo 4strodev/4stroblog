@@ -1,4 +1,8 @@
-[header]
+[sections]
 home = "Inicio"
 about = "Información"
 posts = "Posts"
+
+[actions]
+new_post = "Nuevo post"
+login = "Iniciar sesión"

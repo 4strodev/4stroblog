@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/4strodev/4stroblog/site/features/blog"
+	"github.com/4strodev/4stroblog/site/features/post"
 	"github.com/4strodev/4stroblog/site/shared/i18n"
 	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
@@ -130,8 +130,8 @@ func (s *Server) Init() error {
 }
 
 func (s *Server) setupViews() error {
-	s.viewsEngine.AddFunc("renderPost", func(post string) string {
-		content, err := blog.RenderPost(post)
+	s.viewsEngine.AddFunc("renderPost", func(p string) string {
+		content, err := post.RenderPost(p)
 		if err != nil {
 			return ""
 		}

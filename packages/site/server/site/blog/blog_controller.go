@@ -1,7 +1,7 @@
 package blog
 
 import (
-	"github.com/4strodev/4stroblog/site/features/blog"
+	"github.com/4strodev/4stroblog/site/features/post"
 	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 )
@@ -27,7 +27,7 @@ func (c *SiteBlogController) Init(cont *container.Container) error {
 
 		title := ctx.Params("title")
 
-		html, err := blog.RenderPost(title)
+		html, err := post.RenderPost(title)
 		if err != nil {
 			return err
 		}

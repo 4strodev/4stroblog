@@ -1,4 +1,4 @@
-package blog
+package post
 
 import (
 	emoji "github.com/4strodev/go-markdown-emoji"

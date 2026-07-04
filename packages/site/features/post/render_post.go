@@ -1,4 +1,4 @@
-package blog
+package post
 
 import (
 	"fmt"
