@@ -7,7 +7,7 @@ import (
 )
 
 type InMemoryUserRepository struct {
-	InnerMap map
+	InnerMap map[uuid.UUID]domain.User
 }
 
 // FindByID implements [domain.UserRepository].
