@@ -1,78 +1,82 @@
 package application
 
 import (
-	"bytes"
 	"context"
-	"errors"
-	"io"
+	"net/url"
 	"time"
 
 	"github.com/4strodev/4stroblog/site/features/uploads/domain"
-	"github.com/4strodev/4stroblog/site/shared/db/models"
+	"github.com/4strodev/4stroblog/site/shared/domain/domainerrors"
 	"github.com/4strodev/4stroblog/site/shared/s3"
 	"github.com/minio/minio-go/v7"
 	"gorm.io/gorm"
 )
 
-func NewUploadsService(db *gorm.DB, s3 *minio.Client) *UploadsService {
+func NewUploadsService(db *gorm.DB, s3 *minio.Client, uploadsRepository domain.UploadsRepository) *UploadsService {
 	return &UploadsService{
-		Db:            db,
-		ObjectStorage: s3,
+		Db:                db,
+		ObjectStorage:     s3,
+		UploadsRepository: uploadsRepository,
 	}
 }
 
 type UploadsService struct {
-	Db            *gorm.DB
-	ObjectStorage *minio.Client
+	Db                *gorm.DB
+	ObjectStorage     *minio.Client
+	UploadsRepository domain.UploadsRepository
 }
 
-// Saves a file directly to s3 returning an error if something happens. It does not do any modification
-// to the upload content. It just adds the time if it is missing.
-// If the content is nil it returns an error
-func (s *UploadsService) SaveFile(ctx context.Context, uploadFile domain.Upload) error {
-	if uploadFile.Content == nil {
-		return errors.New("cannot upload an file with no content")
+func createPolicy(upload domain.Upload) (*minio.PostPolicy, error) {
+	policy := minio.NewPostPolicy()
+	err := policy.SetBucket(s3.UPLOADS_BUCKET)
+	if err != nil {
+		return nil, domainerrors.Errorf(domainerrors.RUNTIME,
+			"cannot set bucket to post policy: %w",
+			err)
+	}
+	err = policy.SetExpires(time.Now().UTC().Add(time.Second * 30))
+	if err != nil {
+		return nil, domainerrors.Errorf(domainerrors.RUNTIME,
+			"cannot set expiration to post policy: %w",
+			err)
+	}
+	err = policy.SetContentType(upload.MimeType)
+	if err != nil {
+		return nil, domainerrors.Errorf(domainerrors.RUNTIME,
+			"cannot set content type to post policy: %w",
+			err)
+	}
+	err = policy.SetKey(upload.ID.String())
+	if err != nil {
+		return nil, domainerrors.Errorf(domainerrors.RUNTIME,
+			"cannot set key to post policy: %w",
+			err)
 	}
 
+	return policy, nil
+}
+
+// CreateUpload saves the passed upload in case it doesn't exists.
+// It returns the post policy with the required form data fields for the upload.
+// If upload exists returns [domainerrors.DATA_CONFLICT]
+func (s *UploadsService) CreateUpload(ctx context.Context, uploadFile domain.Upload) (u *url.URL, formData map[string]string, err error) {
 	if uploadFile.Time.IsZero() {
 		uploadFile.Time = time.Now()
 	}
 
-	var buffer bytes.Buffer
-	_, err := io.Copy(&buffer, uploadFile.Content)
+	// Create pre-signed policy only if upload doesn't exists
+	_, err = s.UploadsRepository.FindByID(ctx, uploadFile.ID)
+	_, isNotFound := domainerrors.Is(err, domainerrors.ENTITY_NOT_FOUND)
+	if !isNotFound && err != nil {
+		return
+	}
+
+	var policy *minio.PostPolicy
+	policy, err = createPolicy(uploadFile)
 	if err != nil {
-		return err
+		return
 	}
 
-	uploadInfo, err := s.ObjectStorage.PutObject(
-		ctx,
-		s3.UPLOADS_BUCKET,
-		uploadFile.ID.String(),
-		uploadFile.Content,
-		int64(buffer.Len()),
-		minio.PutObjectOptions{Checksum: minio.ChecksumSHA256,
-			UserMetadata: map[string]string{
-				"name": uploadFile.Name,
-				"time": uploadFile.Time.UTC().String(),
-			}},
-	)
-	if err != nil {
-		return err
-	}
-	uploadFile.Hash = uploadInfo.ChecksumSHA256
-
-	uploadModel := models.Upload{
-		ID:       uploadFile.ID,
-		Hash:     uploadFile.Hash,
-		Name:     uploadFile.Name,
-		MimeType: uploadFile.MimeType,
-		Time:     uploadFile.Time,
-	}
-
-	err = s.Db.WithContext(ctx).Save(uploadModel).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
+	u, formData, err = s.ObjectStorage.PresignedPostPolicy(ctx, policy)
+	return
 }

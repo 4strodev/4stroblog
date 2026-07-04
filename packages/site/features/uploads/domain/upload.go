@@ -1,8 +1,6 @@
 package domain
 
 import (
-	"fmt"
-	"io"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,11 +13,6 @@ type Upload struct {
 	MimeType string
 	// A human readable name
 	Name    string
-	Content io.Reader
+	// Upload time
 	Time    time.Time
-}
-
-// GetStorageName returns the name of the file for the storage system
-func (u *Upload) GetStorageName() string {
-	return fmt.Sprintf("%s_%s", u.Hash, u.Name)
 }

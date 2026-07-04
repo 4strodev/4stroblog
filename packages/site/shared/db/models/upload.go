@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -10,7 +11,7 @@ import (
 type Upload struct {
 	gorm.Model
 	ID       uuid.UUID `gorm:"primaryKey"`
-	Hash     string
+	Hash     sql.NullString
 	Name     string
 	MimeType string
 	Time     time.Time

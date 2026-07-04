@@ -16,6 +16,7 @@ func (c *SiteBlogController) Init(cont *container.Container) error {
 	}
 	blogRouter := router.Group("/site/blog")
 
+
 	blogRouter.Get("/render/post/:title", func(ctx fiber.Ctx) error {
 		// Get post metadata
 		// Validate publish date
