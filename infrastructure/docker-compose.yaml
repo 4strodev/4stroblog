@@ -14,7 +14,9 @@ services:
     command: server /data --console-address ":9001"
 
   4stroblog:
-    build: ../packages
+    build:
+      context: ../
+      dockerfile: ./packages/Dockerfile
     restart: always
     container_name: 4stroblog
     environment:

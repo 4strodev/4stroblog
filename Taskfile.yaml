@@ -47,7 +47,7 @@ tasks:
     cmd: docker compose up
 
   docker:init:
-    desc: "Start base container"
+    desc: "Start infra containers"
     dir: './infrastructure'
     cmds:
      - docker compose up minio -d
