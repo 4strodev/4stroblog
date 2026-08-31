@@ -14,6 +14,8 @@ const (
 	// that returned an unexpected error. Differs from DATABASE because
 	// the error occurred inside the app not on external components
 	RUNTIME
-	// Used when got an unexpected database error
+	// Used when got a database error
 	DATABASE
+	// Used when got an object storage error
+	STORAGE
 )

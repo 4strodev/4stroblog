@@ -12,4 +12,7 @@ type UploadsRepository interface {
 	// FindByID queries for an upload by UUID.
 	// Returns ENTITY_NOT_FOUND if no upload exists with that ID, DATABASE on other failures.
 	FindByID(ctx context.Context, id uuid.UUID) (Upload, error)
+	// FindByHash queries for an upload by its hash.
+	// Returns ENTITY_NOT_FOUND if no upload exists with that hash, DATABASE on other failures.
+	FindByHash(ctx context.Context, hash []byte) (Upload, error)
 }

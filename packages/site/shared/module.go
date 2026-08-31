@@ -10,7 +10,7 @@ import (
 )
 
 var SharedModule = core.Module{
-	ExportSingletons: []any{
+	Singletons: []any{
 		db.NewDb,
 		s3.NewS3Client,
 		logger.NewLogger,

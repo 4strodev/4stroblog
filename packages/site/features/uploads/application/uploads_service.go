@@ -2,21 +2,28 @@ package application
 
 import (
 	"context"
-	"net/url"
+	"io"
 	"time"
 
 	"github.com/4strodev/4stroblog/site/features/uploads/domain"
+	"github.com/4strodev/4stroblog/site/shared/config"
 	"github.com/4strodev/4stroblog/site/shared/domain/domainerrors"
-	"github.com/4strodev/4stroblog/site/shared/s3"
+	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 	"gorm.io/gorm"
 )
 
-func NewUploadsService(db *gorm.DB, s3 *minio.Client, uploadsRepository domain.UploadsRepository) *UploadsService {
+func NewUploadsService(
+	db *gorm.DB,
+	s3 *minio.Client,
+	uploadsRepository domain.UploadsRepository,
+	config config.Config,
+) *UploadsService {
 	return &UploadsService{
 		Db:                db,
 		ObjectStorage:     s3,
 		UploadsRepository: uploadsRepository,
+		Config:            config,
 	}
 }
 
@@ -24,59 +31,56 @@ type UploadsService struct {
 	Db                *gorm.DB
 	ObjectStorage     *minio.Client
 	UploadsRepository domain.UploadsRepository
+	Config            config.Config
 }
 
-func createPolicy(upload domain.Upload) (*minio.PostPolicy, error) {
-	policy := minio.NewPostPolicy()
-	err := policy.SetBucket(s3.UPLOADS_BUCKET)
+// UploadBlob saves metadata and blob. If blob is already persisted it omits it's persist step.
+// it updates inner upload data that is not set: uuid, name, time, etc.
+// it can return a [domainerrors.RUNTIME]
+func (s *UploadsService) UploadBlob(ctx context.Context, upload *domain.Upload, blob io.ReadSeeker) error {
+	err := upload.DigestBlob(blob)
 	if err != nil {
-		return nil, domainerrors.Errorf(domainerrors.RUNTIME,
-			"cannot set bucket to post policy: %w",
-			err)
+		return domainerrors.Errorf(domainerrors.RUNTIME, "cannot calculate upload hash: %w", err)
 	}
-	err = policy.SetExpires(time.Now().UTC().Add(time.Second * 30))
+	_, err = blob.Seek(0, io.SeekStart)
 	if err != nil {
-		return nil, domainerrors.Errorf(domainerrors.RUNTIME,
-			"cannot set expiration to post policy: %w",
-			err)
-	}
-	err = policy.SetContentType(upload.MimeType)
-	if err != nil {
-		return nil, domainerrors.Errorf(domainerrors.RUNTIME,
-			"cannot set content type to post policy: %w",
-			err)
-	}
-	err = policy.SetKey(upload.ID.String())
-	if err != nil {
-		return nil, domainerrors.Errorf(domainerrors.RUNTIME,
-			"cannot set key to post policy: %w",
-			err)
+		return domainerrors.Errorf(domainerrors.RUNTIME, "cannot seek upload blob: %w", err)
 	}
 
-	return policy, nil
-}
-
-// CreateUpload saves the passed upload in case it doesn't exists.
-// It returns the post policy with the required form data fields for the upload.
-// If upload exists returns [domainerrors.DATA_CONFLICT]
-func (s *UploadsService) CreateUpload(ctx context.Context, uploadFile domain.Upload) (u *url.URL, formData map[string]string, err error) {
-	if uploadFile.Time.IsZero() {
-		uploadFile.Time = time.Now()
+	if upload.ID == uuid.Nil {
+		upload.ID = uuid.New()
 	}
 
-	// Create pre-signed policy only if upload doesn't exists
-	_, err = s.UploadsRepository.FindByID(ctx, uploadFile.ID)
-	_, isNotFound := domainerrors.Is(err, domainerrors.ENTITY_NOT_FOUND)
+	if upload.Name == "" {
+		upload.Name = upload.StringHash()
+	}
+
+	if upload.Time.IsZero() {
+		upload.Time = time.Now()
+	}
+
+	_, err = s.UploadsRepository.FindByHash(ctx, upload.Hash)
+	domainErr, isNotFound := domainerrors.Is(err, domainerrors.ENTITY_NOT_FOUND)
 	if !isNotFound && err != nil {
-		return
+		return domainErr
 	}
 
-	var policy *minio.PostPolicy
-	policy, err = createPolicy(uploadFile)
+	err = s.UploadsRepository.Save(ctx, *upload)
 	if err != nil {
-		return
+		return domainerrors.Errorf(domainerrors.DATABASE, "cannot save upload meta-data: %w", err)
 	}
 
-	u, formData, err = s.ObjectStorage.PresignedPostPolicy(ctx, policy)
-	return
+	if isNotFound {
+		_, err = s.ObjectStorage.PutObject(ctx,
+			s.Config.Storage.S3.Bucket,
+			upload.StringHash(),
+			blob,
+			int64(upload.Size),
+			minio.PutObjectOptions{})
+		if err != nil {
+			return domainerrors.Errorf(domainerrors.STORAGE, "cannot put upload blob: %w", err)
+		}
+	}
+
+	return nil
 }

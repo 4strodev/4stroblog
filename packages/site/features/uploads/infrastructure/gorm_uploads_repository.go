@@ -15,6 +15,30 @@ type GormUploadsRepository struct {
 	DB *gorm.DB
 }
 
+// FindByHash implements [domain.UploadsRepository].
+func (r *GormUploadsRepository) FindByHash(ctx context.Context, hash []byte) (domain.Upload, error) {
+	uploadModel := models.Upload{}
+	upload := domain.Upload{}
+
+	err := r.DB.WithContext(ctx).First(&uploadModel, "hash = ?", hash).Error
+	if err != nil {
+		errorCode := domainerrors.DATABASE
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			errorCode = domainerrors.ENTITY_NOT_FOUND
+		}
+		return upload, domainerrors.WrapError(errorCode, err)
+	}
+
+	upload = domain.Upload{
+		ID:       uploadModel.ID,
+		Hash:     uploadModel.Hash,
+		Name:     uploadModel.Name,
+		MimeType: uploadModel.MimeType,
+		Time:     uploadModel.Time,
+	}
+	return upload, nil
+}
+
 func (r *GormUploadsRepository) Save(ctx context.Context, upload domain.Upload) error {
 	uploadModel := models.Upload{
 		ID:       upload.ID,

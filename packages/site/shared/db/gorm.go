@@ -12,6 +12,7 @@ var appModels = []any{
 	&models.Session{},
 	&models.Profile{},
 	&models.SiteMeta{},
+	&models.Upload{},
 }
 var dbInstance *gorm.DB
 

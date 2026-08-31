@@ -11,7 +11,7 @@ import (
 type Upload struct {
 	gorm.Model
 	ID       uuid.UUID `gorm:"primaryKey"`
-	Hash     sql.NullString
+	Hash     sql.RawBytes
 	Name     string
 	MimeType string
 	Time     time.Time

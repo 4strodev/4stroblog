@@ -77,6 +77,8 @@ func (c *SiteAdminController) Init(cont *container.Container) error {
 			}
 
 			if logOut {
+				// do not load site admin if it's logged out 
+				// and go to next matching route
 				return ctx.Next()
 			}
 
