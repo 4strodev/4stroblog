@@ -15,6 +15,20 @@ type GormUploadsRepository struct {
 	DB *gorm.DB
 }
 
+// DeleteById implements [domain.UploadsRepository].
+func (r *GormUploadsRepository) DeleteById(ctx context.Context, id uuid.UUID) error {
+	err := r.DB.WithContext(ctx).Delete(&models.Upload{}, id).Error
+	if err != nil {
+		errorCode := domainerrors.DATABASE
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return domainerrors.WrapError(errorCode, err)
+	}
+
+	return nil
+}
+
 // FindByHash implements [domain.UploadsRepository].
 func (r *GormUploadsRepository) FindByHash(ctx context.Context, hash []byte) (domain.Upload, error) {
 	uploadModel := models.Upload{}

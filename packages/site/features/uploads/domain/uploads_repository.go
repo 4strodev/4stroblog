@@ -15,4 +15,8 @@ type UploadsRepository interface {
 	// FindByHash queries for an upload by its hash.
 	// Returns ENTITY_NOT_FOUND if no upload exists with that hash, DATABASE on other failures.
 	FindByHash(ctx context.Context, hash []byte) (Upload, error)
+	// DeleteById deletes upload by its id
+	// if entity doesn't exist returns no error
+	// returns DATABASE error on failure
+	DeleteById(ctx context.Context, id uuid.UUID) error
 }

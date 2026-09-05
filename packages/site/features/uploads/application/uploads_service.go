@@ -34,10 +34,40 @@ type UploadsService struct {
 	Config            config.Config
 }
 
-// UploadBlob saves metadata and blob. If blob is already persisted it omits it's persist step.
+func (s *UploadsService) DeleteUpload(ctx context.Context, id uuid.UUID) error {
+	upload, err := s.UploadsRepository.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	err = s.UploadsRepository.DeleteById(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.UploadsRepository.FindByHash(ctx, upload.Hash)
+	domainErr, isNotFound := domainerrors.Is(err, domainerrors.ENTITY_NOT_FOUND)
+	if !isNotFound && err != nil {
+		return domainErr
+	}
+
+	// No more uploads with this hash remove object from storage
+	err = s.ObjectStorage.RemoveObject(
+		ctx,
+		s.Config.Storage.S3.Bucket,
+		upload.StringHash(),
+		minio.RemoveObjectOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SaveUpload saves metadata and blob. If blob is already persisted it omits it's persist step.
 // it updates inner upload data that is not set: uuid, name, time, etc.
 // it can return a [domainerrors.RUNTIME]
-func (s *UploadsService) UploadBlob(ctx context.Context, upload *domain.Upload, blob io.ReadSeeker) error {
+func (s *UploadsService) SaveUpload(ctx context.Context, upload *domain.Upload, blob io.ReadSeeker) error {
 	err := upload.DigestBlob(blob)
 	if err != nil {
 		return domainerrors.Errorf(domainerrors.RUNTIME, "cannot calculate upload hash: %w", err)
@@ -65,11 +95,6 @@ func (s *UploadsService) UploadBlob(ctx context.Context, upload *domain.Upload, 
 		return domainErr
 	}
 
-	err = s.UploadsRepository.Save(ctx, *upload)
-	if err != nil {
-		return domainerrors.Errorf(domainerrors.DATABASE, "cannot save upload meta-data: %w", err)
-	}
-
 	if isNotFound {
 		_, err = s.ObjectStorage.PutObject(ctx,
 			s.Config.Storage.S3.Bucket,
@@ -80,6 +105,11 @@ func (s *UploadsService) UploadBlob(ctx context.Context, upload *domain.Upload, 
 		if err != nil {
 			return domainerrors.Errorf(domainerrors.STORAGE, "cannot put upload blob: %w", err)
 		}
+	}
+
+	err = s.UploadsRepository.Save(ctx, *upload)
+	if err != nil {
+		return domainerrors.Errorf(domainerrors.DATABASE, "cannot save upload meta-data: %w", err)
 	}
 
 	return nil

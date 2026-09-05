@@ -7,6 +7,7 @@ import (
 	"github.com/4strodev/4stroblog/site/features/uploads/domain"
 	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
+	"github.com/google/uuid"
 )
 
 type SiteUploadsController struct {
@@ -32,12 +33,22 @@ func (c *SiteUploadsController) Init(cont *container.Container) error {
 			return err
 		}
 
-		err = c.UploadService.UploadBlob(ctx.Context(), &domain.Upload{}, file)
+		err = c.UploadService.SaveUpload(ctx.Context(), &domain.Upload{}, file)
 		if err != nil {
 			return err
 		}
 
 		return ctx.SendStatus(http.StatusCreated)
 	})
+
+	group.Delete("/:id", func (ctx fiber.Ctx) error {
+		id := ctx.Params("id")
+		uuid, err := uuid.Parse(id)
+		if err != nil {
+			return err
+		}
+		return c.UploadService.DeleteUpload(ctx.Context(), uuid)
+	})
+
 	return nil
 }
