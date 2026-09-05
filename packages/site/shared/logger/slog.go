@@ -5,6 +5,10 @@ import (
 	"log/slog"
 	"os"
 	"runtime/debug"
+	"slices"
+	"strings"
+
+	colorjson "github.com/hydronica/color-json"
 )
 
 type customLogHandler struct {
@@ -21,6 +25,11 @@ func (h *customLogHandler) Handle(ctx context.Context, r slog.Record) error {
 }
 
 func NewLogger() *slog.Logger {
-	base := slog.NewJSONHandler(os.Stdout, nil)
-	return slog.New(&customLogHandler{base})
+	var handler slog.Handler = colorjson.NewHandler(os.Stdout, nil)
+	if val, ok := os.LookupEnv("NO_COLOR"); ok &&
+		slices.Contains([]string{"1", "true", ""}, strings.ToLower(val)) {
+		handler = slog.NewJSONHandler(os.Stdout, nil)
+	}
+
+	return slog.New(&customLogHandler{handler})
 }
