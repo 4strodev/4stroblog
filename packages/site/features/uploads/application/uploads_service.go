@@ -51,6 +51,10 @@ func (s *UploadsService) DeleteUpload(ctx context.Context, id uuid.UUID) error {
 		return domainErr
 	}
 
+	if isNotFound {
+		return nil
+	}
+
 	// No more uploads with this hash remove object from storage
 	err = s.ObjectStorage.RemoveObject(
 		ctx,
@@ -101,7 +105,9 @@ func (s *UploadsService) SaveUpload(ctx context.Context, upload *domain.Upload, 
 			upload.StringHash(),
 			blob,
 			int64(upload.Size),
-			minio.PutObjectOptions{})
+			minio.PutObjectOptions{
+				ContentType: upload.MimeType,
+			})
 		if err != nil {
 			return domainerrors.Errorf(domainerrors.STORAGE, "cannot put upload blob: %w", err)
 		}

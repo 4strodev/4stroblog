@@ -33,7 +33,9 @@ func (c *SiteUploadsController) Init(cont *container.Container) error {
 			return err
 		}
 
-		err = c.UploadService.SaveUpload(ctx.Context(), &domain.Upload{}, file)
+		err = c.UploadService.SaveUpload(ctx.Context(), &domain.Upload{
+			Name: document.Filename,
+		}, file)
 		if err != nil {
 			return err
 		}

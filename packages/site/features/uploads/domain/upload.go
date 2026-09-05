@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
@@ -33,6 +34,9 @@ func (u *Upload) DigestBlob(blob io.Reader) error {
 	hash := sha256.New()
 	bs := hash.BlockSize()
 
+	const MIME_BS = 512
+	var mimeBlock = make([]byte, MIME_BS)
+	var n_mimeBlock = 0
 	var size uint64 = 0
 	buf := make([]byte, bs)
 	for {
@@ -43,12 +47,19 @@ func (u *Upload) DigestBlob(blob io.Reader) error {
 		if err != nil {
 			return err
 		}
+
+		if n_mimeBlock < MIME_BS {
+			n_mimeBlock = copy(mimeBlock[n_mimeBlock:], buf)
+		}
+
 		_, err = hash.Write(buf[:n])
 		if err != nil {
 			return err
 		}
 		size += uint64(n)
 	}
+
+	u.MimeType = http.DetectContentType(mimeBlock)
 
 	u.Hash = hash.Sum(nil)
 	u.Size = size
