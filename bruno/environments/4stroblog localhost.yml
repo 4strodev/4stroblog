@@ -1,0 +1,6 @@
+name: 4stroblog localhost
+variables:
+  - name: host
+    value: http://localhost:{{port}}
+  - name: port
+    value: "3000"

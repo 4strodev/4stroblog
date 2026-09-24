@@ -1,0 +1,19 @@
+info:
+  name: Delete file
+  type: http
+  seq: 2
+
+http:
+  method: DELETE
+  url: "{{host}}/site/uploads/:id"
+  params:
+    - name: id
+      value: bfbf31ec-f67b-4238-9a63-9fa7b0ae23bb
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

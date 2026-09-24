@@ -1,0 +1,23 @@
+info:
+  name: Upload file
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{host}}/site/uploads"
+  body:
+    type: multipart-form
+    data:
+      - name: document
+        type: file
+        value:
+          - /home/tracksphere/Pictures/IMG20260608155222.jpeg
+        contentType: image/jpeg
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
