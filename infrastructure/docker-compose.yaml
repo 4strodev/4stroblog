@@ -1,6 +1,6 @@
 services:
   minio:
-    image: minio/minio:latest
+    image: quay.io/minio/aistor/minio:latest
     restart: always
     container_name: minio
     ports:
@@ -11,6 +11,7 @@ services:
       MINIO_ROOT_PASSWORD: s3cretMinio
     volumes:
       - ./data:/data
+      - ./minio/minio.license:/minio.license:ro
     command: server /data --console-address ":9001"
 
   4stroblog:
