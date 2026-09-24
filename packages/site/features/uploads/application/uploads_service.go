@@ -51,7 +51,7 @@ func (s *UploadsService) DeleteUpload(ctx context.Context, id uuid.UUID) error {
 		return domainErr
 	}
 
-	if isNotFound {
+	if !isNotFound {
 		return nil
 	}
 
