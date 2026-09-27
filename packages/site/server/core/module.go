@@ -49,12 +49,21 @@ func (m *Module) initDependencies(ctner *container.Container) error {
 	return nil
 }
 
-// initControllers starts the controllers on the module graph
-// if the dependency graph was not
+// initControllers starts the controllers on the module graph.
+// Imported modules go first so their specific routes are registered before
+// the catch-all routes (e.g. "/site/*") of the modules that import them.
+// Fiber matches routes in registration order.
 func (m *Module) initControllers() error {
 	if m.container == nil {
 		fmt.Println("module failed", m.Name)
 		return errors.New("dependencies not initialized")
+	}
+
+	for _, module := range m.Imports {
+		err := module.initControllers()
+		if err != nil {
+			return err
+		}
 	}
 
 	for _, controller := range m.Controllers {
@@ -66,13 +75,6 @@ func (m *Module) initControllers() error {
 		err = controller.Init(m.container)
 		if err != nil {
 			return fmt.Errorf("error initializing controllers for %s: %w", m.Name, err)
-		}
-	}
-
-	for _, module := range m.Imports {
-		err := module.initControllers()
-		if err != nil {
-			return err
 		}
 	}
 

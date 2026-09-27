@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/4strodev/4stroblog/site/server/core"
+	"github.com/4strodev/4stroblog/site/server/htmx"
 	"github.com/4strodev/4stroblog/site/server/site"
 	"github.com/4strodev/4stroblog/site/shared/config"
 	"github.com/4strodev/4stroblog/site/shared/db"
@@ -41,6 +42,9 @@ func main() {
 			},
 		},
 	}
+
+	// Must run before any /htmx route
+	s.AddMiddleware(htmx.RequireHtmx)
 
 	log.Println("Intitializing server")
 	err = s.Init()
