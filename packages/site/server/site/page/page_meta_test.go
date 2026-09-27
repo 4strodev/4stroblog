@@ -10,9 +10,9 @@ func TestParseFrontMatter(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "reads layout and title",
-			content: "{{/*\n+++\nlayout = \"layouts/full-width\"\ntitle = \"New post\"\n+++\n*/}}\n<form></form>",
-			want:    PageMeta{Layout: "layouts/full-width", Title: "New post"},
+			name:    "reads layout",
+			content: "{{/*\n+++\nlayout = \"layouts/full-width\"\n+++\n*/}}\n<form></form>",
+			want:    PageMeta{Layout: "layouts/full-width"},
 		},
 		{
 			name:    "no front matter",

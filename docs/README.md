@@ -19,3 +19,6 @@ See [architecture/stack.md](architecture/stack.md) for the full list and why eac
 
 - [Architecture](architecture/README.md)
   - [Stack](architecture/stack.md)
+- Features
+  - Pages
+    - [Front matter](features/pages/front-matter.md)

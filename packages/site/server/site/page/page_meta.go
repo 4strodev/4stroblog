@@ -19,7 +19,6 @@ const (
 // PageMeta holds the settings a page declares in its front matter.
 type PageMeta struct {
 	Layout string
-	Title  string
 }
 
 // LoadPagesMeta reads the front matter of every page under viewsDir/pages.
@@ -83,6 +82,5 @@ func parseFrontMatter(content []byte) (PageMeta, error) {
 	}
 
 	meta.Layout, _ = values["layout"].(string)
-	meta.Title, _ = values["title"].(string)
 	return meta, nil
 }
