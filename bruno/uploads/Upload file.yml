@@ -12,8 +12,8 @@ http:
       - name: document
         type: file
         value:
-          - /home/tracksphere/Pictures/IMG20260608155222.jpeg
-        contentType: image/jpeg
+          - _assets/sample.md
+        contentType: text/markdown; charset=utf-8
   auth: inherit
 
 settings:

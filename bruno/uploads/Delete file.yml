@@ -8,7 +8,7 @@ http:
   url: "{{host}}/site/uploads/:id"
   params:
     - name: id
-      value: bfbf31ec-f67b-4238-9a63-9fa7b0ae23bb
+      value: ""
       type: path
   auth: inherit
 
