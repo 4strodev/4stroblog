@@ -1,7 +1,6 @@
 {{/*
 +++
 layout = "layouts/full-width"
-title = "New post"
 +++
 */}}
 
@@ -27,7 +26,7 @@ title = "New post"
         <div class="w-full flex flex-col md:min-h-0">
             <label for="content">Content</label>
             <!--Only the content triggers the markdown preview-->
-            <textarea class="form-control w-full flex-1" id="content" name="content" rows="20"
+            <textarea class="form-control w-full flex-1 font-mono" id="content" name="content" rows="20"
                 hx-post="/site/admin/blog/md-render" hx-trigger="load, input changed delay:500ms"
                 hx-target="#container"></textarea>
         </div>
