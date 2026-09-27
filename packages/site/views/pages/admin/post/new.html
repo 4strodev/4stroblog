@@ -1,10 +1,35 @@
-<div class="size-full flex gap-4 flex-col md:flex-row">
-    <!--Editor-->
-    <form class="w-full" id="editor" hx-post="/site/admin/blog/md-render" hx-trigger="load, input changed delay:500ms" hx-target="#container">
-        <textarea class="form-control w-full" id="content" name="content" rows="20"></textarea>
-    </form>
+<!--TODO: set hx-post to the create post endpoint once it exists-->
+<form class="size-full flex flex-col gap-4" id="editor">
+    <!--Metadata-->
+    <div class="flex flex-col gap-4">
+        <div class="flex flex-col">
+            <label for="title">Title</label>
+            <input class="form-control" type="text" name="title" id="title" maxlength="200" required>
+        </div>
 
-    <!--Container-->
-    <div id="container" class="w-full">
+        <div class="flex flex-col">
+            <label for="tags">Tags</label>
+            <select class="form-control" name="tags" id="tags" multiple>
+                {{/* TODO: load existing tags, e.g. {{ range .Tags }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }} */}}
+            </select>
+        </div>
     </div>
-</div>
+
+    <!--Content: editor and rendered preview side by side-->
+    <div class="flex gap-4 flex-col md:flex-row">
+        <div class="w-full flex flex-col">
+            <label for="content">Content</label>
+            <!--Only the content triggers the markdown preview-->
+            <textarea class="form-control w-full" id="content" name="content" rows="20"
+                hx-post="/site/admin/blog/md-render" hx-trigger="load, input changed delay:500ms"
+                hx-target="#container"></textarea>
+        </div>
+
+        <!--Container-->
+        <div id="container" class="w-full">
+        </div>
+    </div>
+
+    <!--TODO: enable once the form posts to the create post endpoint-->
+    <button type="submit" class="btn-primary btn-md sm:max-w-32" disabled>Save</button>
+</form>

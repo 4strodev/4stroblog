@@ -1,0 +1,44 @@
+/*
+ * Lists without classes (e.g. rendered markdown) get markers back.
+ * Tailwind preflight removes them. Lists with classes (nav menus, etc.) keep their own style.
+ *
+ * Marker changes with nesting depth (any list type counts as a level):
+ *   ul: circle > disc > square
+ *   ol: decimal > lower-alpha > lower-roman
+ * Levels deeper than 3 keep the level 3 marker.
+ */
+ul:not([class]),
+.list {
+    @apply ps-6 mb-4;
+    list-style-type: circle;
+}
+
+:is(ul:not([class]), ol:not([class]), .list) ul {
+    list-style-type: disc;
+}
+
+:is(ul:not([class]), ol:not([class]), .list) :is(ul, ol) ul {
+    list-style-type: square;
+}
+
+ol:not([class]) {
+    @apply ps-6 mb-4;
+    list-style-type: decimal;
+}
+
+:is(ul:not([class]), ol:not([class]), .list) ol {
+    list-style-type: lower-alpha;
+}
+
+:is(ul:not([class]), ol:not([class]), .list) :is(ul, ol) ol {
+    list-style-type: lower-roman;
+}
+
+li > ul,
+li > ol {
+    @apply mt-1 mb-0;
+}
+
+li {
+    @apply mb-1;
+}
