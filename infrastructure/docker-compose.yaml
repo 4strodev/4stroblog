@@ -1,14 +1,21 @@
 services:
-  minio:
-    image: quay.io/minio/aistor/minio:latest
+  rustfs_perms:
+      image: alpine
+      user: root
+      volumes:
+        - ./data:/fix_path
+      command: chown -R 10001:10001 /fix_path
+
+  object_storage:
+    image: rustfs/rustfs:1.0.0
     restart: always
-    container_name: minio
+    container_name: rustfs
     ports:
       - 9000:9000
       - 9001:9001
     environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: s3cretMinio
+      RUSTFS_ACCESS_KEY: minio
+      RUSTFS_SECRET_KEY: s3cretMinio
     volumes:
       - ./data:/data
       - ./minio/minio.license:/minio.license:ro

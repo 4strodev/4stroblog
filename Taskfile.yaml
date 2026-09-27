@@ -50,4 +50,4 @@ tasks:
     desc: "Start infra containers"
     dir: './infrastructure'
     cmds:
-     - docker compose up minio -d
+     - docker compose up rustfs_perms object_storage -d
