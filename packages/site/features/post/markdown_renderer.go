@@ -2,11 +2,22 @@ package post
 
 import (
 	emoji "github.com/4strodev/go-markdown-emoji"
-	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
 	"github.com/microcosm-cc/bluemonday"
 )
+
+var renderPool *RenderPool
+var sanitizePolicy = bluemonday.UGCPolicy()
+
+func init() {
+	renderPool = new(RenderPool)
+	renderPool.New = func() any {
+		htmlFlags := html.CommonFlags | html.HrefTargetBlank
+		opts := html.RendererOptions{Flags: htmlFlags, RenderNodeHook: emoji.Renderer}
+		return html.NewRenderer(opts)
+	}
+}
 
 // RenderMarkdown renders and sanitizes markdown input converting it into
 // save html
@@ -17,13 +28,12 @@ func RenderMarkdown(md []byte) []byte {
 		ParserHook: emoji.Parser,
 	}
 	doc := p.Parse(md)
-	htmlFlags := html.CommonFlags | html.HrefTargetBlank
-	opts := html.RendererOptions{Flags: htmlFlags, RenderNodeHook: emoji.Renderer}
-	renderer := html.NewRenderer(opts)
 
 	// Generate html from parsed markdown
-	rawHtml := markdown.Render(doc, renderer)
+	rawHtml := renderPool.Render(doc)
+
 	// Sanitize generated html
-	html := bluemonday.UGCPolicy().SanitizeBytes(rawHtml)
+	html := sanitizePolicy.SanitizeBytes(rawHtml)
+
 	return html
 }
