@@ -6,10 +6,10 @@
 |------------|---------|
 | [Go](https://go.dev) 1.25 | Language of the application. |
 | [Fiber v3](https://gofiber.io) | HTTP server and router. Serves pages, the JSON API and static assets. |
-| [Fiber html template](https://github.com/gofiber/template) | Renders the Go `html/template` files in `views/`. |
+| [Fiber html template](https://github.com/gofiber/template) | Renders the Go `html/template` files from the configured views folder (`views.folder`). |
 | [wiring_graphs](https://github.com/4strodev/wiring_graphs) | Dependency injection. Wires modules, services and controllers together. |
 | [GORM](https://gorm.io) + SQLite | ORM and embedded database for app data. SQLite needs no separate server (requires `CGO_ENABLED=1`). |
-| [Koanf](https://github.com/knadh/koanf) | Loads configuration from `config/config.toml`. |
+| [Koanf](https://github.com/knadh/koanf) | Loads configuration from `config/config.toml` (see [Configuration](../configuration.md)). Also parses page front matter. |
 | [minio-go](https://github.com/minio/minio-go) | S3 client used to store and delete uploaded files. |
 | [gomarkdown](https://github.com/gomarkdown/markdown) | Converts post Markdown to HTML. |
 | [go-markdown-emoji](../../packages/go-markdown-emoji) | Local module. Adds `:emoji:` shortcodes to the Markdown renderer. |

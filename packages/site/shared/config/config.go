@@ -10,6 +10,8 @@ import (
 
 type SiteConfig struct {
 	AdminEmail string `koanf:"admin_email" validate:"required"`
+	// Title is the default page title when a page does not set one
+	Title string `koanf:"title"`
 }
 
 type EnvironmentConfig struct {

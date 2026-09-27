@@ -17,6 +17,8 @@ type SitePageController struct {
 	PagesFolder string `wiring:",omit"`
 	// pagesMeta holds the front matter of each page, loaded once on Init
 	pagesMeta map[string]PageMeta `wiring:",omit"`
+	// defaultMeta is used by pages without front matter entry
+	defaultMeta PageMeta `wiring:",omit"`
 }
 
 func (c *SitePageController) Init(cont *container.Container) error {
@@ -25,7 +27,11 @@ func (c *SitePageController) Init(cont *container.Container) error {
 		return err
 	}
 
-	c.pagesMeta, err = LoadPagesMeta(c.Config.Views.Folder)
+	c.defaultMeta = PageMeta{
+		Layout: defaultLayout,
+		Title:  c.Config.Site.Title,
+	}
+	c.pagesMeta, err = LoadPagesMeta(c.Config.Views.Folder, c.defaultMeta)
 	if err != nil {
 		return err
 	}
@@ -52,15 +58,14 @@ func (c *SitePageController) Init(cont *container.Container) error {
 	return nil
 }
 
-// render renders a page with the layout set in its front matter, or the main layout.
-// The front matter is available in templates as .Meta
+// render renders a page with the layout set in its front matter.
+// The front matter, with defaults applied, is available in templates as .Meta
 func (c *SitePageController) render(ctx fiber.Ctx, page string) error {
-	meta := c.pagesMeta[page]
-	layout := meta.Layout
-	if layout == "" {
-		layout = defaultLayout
+	meta, ok := c.pagesMeta[page]
+	if !ok {
+		meta = c.defaultMeta
 	}
-	return ctx.Render(page, fiber.Map{"Meta": meta}, layout)
+	return ctx.Render(page, fiber.Map{"Meta": meta}, meta.Layout)
 }
 
 func TemplateNotFound(err error) bool {

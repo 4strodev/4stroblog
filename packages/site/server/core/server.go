@@ -71,8 +71,13 @@ func (s *Server) Init() error {
 		return err
 	}
 
+	conf, err := container.Resolve[config.Config](s.Container)
+	if err != nil {
+		return err
+	}
+
 	// Views need dependencies to be initialized
-	err = s.setupViews()
+	err = s.setupViews(conf)
 	if err != nil {
 		return err
 	}
@@ -117,6 +122,10 @@ func (s *Server) Init() error {
 
 		ctx.ViewBind(fiber.Map{
 			"Lang": base.String(),
+			// Site settings available to every template as .Site
+			"Site": fiber.Map{
+				"Title": conf.Site.Title,
+			},
 		})
 
 		return ctx.Next()
@@ -132,12 +141,8 @@ func (s *Server) Init() error {
 	return nil
 }
 
-func (s *Server) setupViews() error {
-	conf, err := container.Resolve[config.Config](s.Container)
-	if err != nil {
-		return err
-	}
-	err = checkRequiredViews(conf.Views.Folder)
+func (s *Server) setupViews(conf config.Config) error {
+	err := checkRequiredViews(conf.Views.Folder)
 	if err != nil {
 		return err
 	}

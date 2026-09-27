@@ -2,6 +2,7 @@ package blog
 
 import (
 	"github.com/4strodev/4stroblog/site/features/post"
+	"github.com/4strodev/4stroblog/site/server/site/page"
 	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 )
@@ -46,6 +47,7 @@ func (c *SiteBlogController) Init(cont *container.Container) error {
 
 		return ctx.Render("scaffolds/post", fiber.Map{
 			"Title": title,
+			"Meta":  page.PageMeta{Layout: "layouts/main", Title: title},
 		}, "layouts/main")
 	})
 

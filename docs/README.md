@@ -4,6 +4,9 @@
 with Go templates, and HTMX swaps page fragments without a JavaScript build step. Posts are
 written in Markdown. Uploaded files live in S3-compatible object storage.
 
+The UI is replaceable: point the config to your own [views](features/views/README.md) folder
+to define layouts and pages without touching the Go code.
+
 ## Built with
 
 - **Go + Fiber**: HTTP server, routing and template rendering.
@@ -17,6 +20,7 @@ See [architecture/stack.md](architecture/stack.md) for the full list and why eac
 
 ## Contents
 
+- [Configuration](configuration.md)
 - [Architecture](architecture/README.md)
   - [Stack](architecture/stack.md)
 - Features

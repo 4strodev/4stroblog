@@ -19,11 +19,13 @@ const (
 // PageMeta holds the settings a page declares in its front matter.
 type PageMeta struct {
 	Layout string
+	Title  string
 }
 
 // LoadPagesMeta reads the front matter of every page under viewsDir/pages.
+// Fields a page does not set take the value from defaults.
 // Keys are template names without extension, e.g. "pages/admin/post/new".
-func LoadPagesMeta(viewsDir string) (map[string]PageMeta, error) {
+func LoadPagesMeta(viewsDir string, defaults PageMeta) (map[string]PageMeta, error) {
 	metas := map[string]PageMeta{}
 	pagesDir := filepath.Join(viewsDir, "pages")
 
@@ -40,7 +42,7 @@ func LoadPagesMeta(viewsDir string) (map[string]PageMeta, error) {
 			return err
 		}
 
-		meta, err := parseFrontMatter(content)
+		meta, err := parseFrontMatter(content, defaults)
 		if err != nil {
 			return fmt.Errorf("invalid front matter in %s: %w", path, err)
 		}
@@ -57,9 +59,9 @@ func LoadPagesMeta(viewsDir string) (map[string]PageMeta, error) {
 }
 
 // parseFrontMatter reads the TOML block between "+++" lines inside a
-// leading template comment. Pages without it get an empty PageMeta.
-func parseFrontMatter(content []byte) (PageMeta, error) {
-	meta := PageMeta{}
+// leading template comment. Missing or empty fields keep the defaults.
+func parseFrontMatter(content []byte, defaults PageMeta) (PageMeta, error) {
+	meta := defaults
 	text := strings.TrimSpace(string(content))
 	if !strings.HasPrefix(text, commentStart) {
 		return meta, nil
@@ -81,6 +83,11 @@ func parseFrontMatter(content []byte) (PageMeta, error) {
 		return meta, err
 	}
 
-	meta.Layout, _ = values["layout"].(string)
+	if layout, ok := values["layout"].(string); ok && layout != "" {
+		meta.Layout = layout
+	}
+	if title, ok := values["title"].(string); ok && title != "" {
+		meta.Title = title
+	}
 	return meta, nil
 }

@@ -5,7 +5,7 @@ They are loaded from a folder set in the config, so you can replace the default 
 
 ## Custom views
 
-Point `views.folder` in `packages/site/config/config.toml` to your views folder:
+Point `views.folder` in `packages/site/config/config.toml` to your views folder (see [Configuration](../../configuration.md)):
 
 ```toml
 [views]
@@ -46,7 +46,17 @@ views/
 
 - A request to `/site/<path>` renders `pages/<path>.html`, or `pages/<path>/index.html`.
 - Admin routes (`/site/admin/<path>`) render from `pages/admin/`.
-- A page picks its layout with a [front matter](pages/front-matter.md) block. Without it, `layouts/main` is used.
+- A page picks its layout and title with a [front matter](pages/front-matter.md) block. Without it, `layouts/main` and `site.title` are used.
+
+## Template data
+
+Available in every template, including layouts and components included with `.`:
+
+| Value | Source | Purpose |
+|-------|--------|---------|
+| `.Site.Title` | `site.title` in config | Site name, e.g. `<title>{{ .Meta.Title }} \| {{ .Site.Title }}</title>`. |
+| `.Lang` | `lang` cookie or `Accept-Language` header | Current language (`en`, `es`). |
+| `.Meta` | Page [front matter](pages/front-matter.md), with defaults applied | Per-page settings: `.Meta.Layout`, `.Meta.Title`. |
 
 ## Template functions
 
@@ -60,4 +70,4 @@ Functions available in every template:
 
 ## Pages
 
-- [Front matter](pages/front-matter.md): set a page's layout from the page itself.
+- [Front matter](pages/front-matter.md): set a page's layout and title from the page itself.
