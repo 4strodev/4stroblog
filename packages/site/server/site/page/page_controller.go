@@ -4,16 +4,15 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/4strodev/4stroblog/site/shared/config"
 	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
 )
 
-const (
-	defaultLayout = "layouts/main"
-	viewsDir      = "./views" // same folder as html.New in server/core/server.go
-)
+const defaultLayout = "layouts/main"
 
 type SitePageController struct {
+	Config      config.Config
 	Prefix      string `wiring:",omit"`
 	PagesFolder string `wiring:",omit"`
 	// pagesMeta holds the front matter of each page, loaded once on Init
@@ -26,7 +25,7 @@ func (c *SitePageController) Init(cont *container.Container) error {
 		return err
 	}
 
-	c.pagesMeta, err = LoadPagesMeta(viewsDir)
+	c.pagesMeta, err = LoadPagesMeta(c.Config.Views.Folder)
 	if err != nil {
 		return err
 	}

@@ -14,6 +14,9 @@ bucket = "uploads"
 [environment]
 god_mode = true
 
+[views]
+folder = "./views"
+
 [i18n]
 default = "en"
 folder = "./config/i18n"

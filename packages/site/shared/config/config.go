@@ -43,6 +43,11 @@ type I18nConfig struct {
 	Default string `koanf:"default"`
 }
 
+type ViewsConfig struct {
+	// Folder with the html templates (pages, layouts, components)
+	Folder string `koanf:"folder"`
+}
+
 type Config struct {
 	Site        SiteConfig        `koanf:"site"`
 	Environment EnvironmentConfig `koanf:"environment"`
@@ -50,6 +55,7 @@ type Config struct {
 	Db          DbConfig          `koanf:"db"`
 	Storage     StorageConfig     `koanf:"storage"`
 	I18n        I18nConfig        `koanf:"i18n"`
+	Views       ViewsConfig       `koanf:"views"`
 }
 
 var config Config

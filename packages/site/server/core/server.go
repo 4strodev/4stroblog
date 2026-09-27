@@ -9,6 +9,7 @@ import (
 	"runtime/debug"
 
 	"github.com/4strodev/4stroblog/site/features/post"
+	"github.com/4strodev/4stroblog/site/shared/config"
 	"github.com/4strodev/4stroblog/site/shared/i18n"
 	"github.com/4strodev/wiring_graphs/pkg/container"
 	"github.com/gofiber/fiber/v3"
@@ -41,8 +42,6 @@ func (s *Server) Init() error {
 	if s.Container == nil {
 		s.Container = container.New()
 	}
-	s.viewsEngine = html.New("./views", ".html")
-
 	// setup dependencies
 	err := s.Container.Singleton(func() fiber.Router {
 		return s.fiber
@@ -134,6 +133,16 @@ func (s *Server) Init() error {
 }
 
 func (s *Server) setupViews() error {
+	conf, err := container.Resolve[config.Config](s.Container)
+	if err != nil {
+		return err
+	}
+	err = checkRequiredViews(conf.Views.Folder)
+	if err != nil {
+		return err
+	}
+	s.viewsEngine = html.New(conf.Views.Folder, ".html")
+
 	s.viewsEngine.AddFunc("renderPost", func(p string) string {
 		content, err := post.RenderPost(p)
 		if err != nil {
