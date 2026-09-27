@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+{{ template "components/head" . }}
+
+<body class="h-screen flex flex-col">
+    {{ template "components/header" . }}
+
+    <main class="flex-grow p-4 justify-center w-full flex">
+        <div class="w-full">
+            {{ embed }}
+        </div>
+    </main>
+
+    {{ template "components/footer" . }}
+    <script>
+        // Load icons
+        feather.replace();
+        // Load syntax highlight
+        hljs.highlightAll();
+
+        document.body.addEventListener('htmx:afterSwap', function (event) {
+            hljs.highlightAll();
+        });
+    </script>
+</body>
+
+</html>

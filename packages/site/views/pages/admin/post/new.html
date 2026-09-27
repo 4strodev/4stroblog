@@ -1,3 +1,10 @@
+{{/*
++++
+layout = "layouts/full-width"
+title = "New post"
++++
+*/}}
+
 <!--TODO: set hx-post to the create post endpoint once it exists-->
 <form class="size-full flex flex-col gap-4" id="editor">
     <!--Metadata-->
@@ -15,18 +22,21 @@
         </div>
     </div>
 
-    <!--Content: editor and rendered preview side by side-->
+    <!--Content: editor and rendered preview side by side, same height-->
     <div class="flex gap-4 flex-col md:flex-row">
-        <div class="w-full flex flex-col">
+        <div class="w-full flex flex-col md:min-h-0">
             <label for="content">Content</label>
             <!--Only the content triggers the markdown preview-->
-            <textarea class="form-control w-full" id="content" name="content" rows="20"
+            <textarea class="form-control w-full flex-1" id="content" name="content" rows="20"
                 hx-post="/site/admin/blog/md-render" hx-trigger="load, input changed delay:500ms"
                 hx-target="#container"></textarea>
         </div>
 
-        <!--Container-->
-        <div id="container" class="w-full">
+        <div class="w-full flex flex-col md:min-h-0">
+            <span>Preview</span>
+            <!--Rendered markdown, scrolls when longer than the editor-->
+            <div id="container" class="flex-1 min-h-40 overflow-auto rounded-md border-2 border-gray-300 bg-white py-1 px-2">
+            </div>
         </div>
     </div>
 

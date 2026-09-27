@@ -8,13 +8,25 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
+const (
+	defaultLayout = "layouts/main"
+	viewsDir      = "./views" // same folder as html.New in server/core/server.go
+)
+
 type SitePageController struct {
 	Prefix      string `wiring:",omit"`
 	PagesFolder string `wiring:",omit"`
+	// pagesMeta holds the front matter of each page, loaded once on Init
+	pagesMeta map[string]PageMeta `wiring:",omit"`
 }
 
 func (c *SitePageController) Init(cont *container.Container) error {
 	router, err := container.Resolve[fiber.Router](cont)
+	if err != nil {
+		return err
+	}
+
+	c.pagesMeta, err = LoadPagesMeta(viewsDir)
 	if err != nil {
 		return err
 	}
@@ -24,14 +36,14 @@ func (c *SitePageController) Init(cont *container.Container) error {
 		routePath := ctx.Path()
 		subPage := strings.TrimPrefix(routePath, c.Prefix)
 		page := filepath.Join("pages", c.PagesFolder, subPage)
-		err := ctx.Render(page, nil, "layouts/main")
+		err := c.render(ctx, page)
 		if !TemplateNotFound(err) {
 			return err
 		}
 
 		// Try for index
 		indexPage := filepath.Join(page, "index")
-		err = ctx.Render(indexPage, nil, "layouts/main")
+		err = c.render(ctx, indexPage)
 		if !TemplateNotFound(err) {
 			return err
 		}
@@ -39,6 +51,17 @@ func (c *SitePageController) Init(cont *container.Container) error {
 		return ctx.Redirect().To("/site/not-found")
 	})
 	return nil
+}
+
+// render renders a page with the layout set in its front matter, or the main layout.
+// The front matter is available in templates as .Meta
+func (c *SitePageController) render(ctx fiber.Ctx, page string) error {
+	meta := c.pagesMeta[page]
+	layout := meta.Layout
+	if layout == "" {
+		layout = defaultLayout
+	}
+	return ctx.Render(page, fiber.Map{"Meta": meta}, layout)
 }
 
 func TemplateNotFound(err error) bool {
